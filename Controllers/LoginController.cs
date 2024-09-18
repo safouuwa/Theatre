@@ -9,7 +9,7 @@ namespace StarterKit.Controllers;
 public class LoginController : Controller
 {
     private readonly ILoginService _loginService;
-    private bool LoggedIn = false;
+    private static LoginStatus LoggedIn;
     
 
     public LoginController(ILoginService loginService)
@@ -24,7 +24,7 @@ public class LoginController : Controller
         LoginStatus status = _loginService.CheckPassword(loginBody.Username, loginBody.Password);
         if (status is LoginStatus.Success)
         {
-            LoggedIn = true;
+            LoggedIn = LoginStatus.Success;
             return Ok("Logged in!");
         }
         if (status is LoginStatus.IncorrectUsername) return Unauthorized("Incorrect username");
@@ -35,13 +35,14 @@ public class LoginController : Controller
     public IActionResult IsAdminLoggedIn()
     {
         // TODO: This method should return a status 200 OK when logged in, else 403, unauthorized
-        if (LoggedIn) return Ok();
+        if (LoggedIn == LoginStatus.Success) return Ok("You are logged in!");
         return Unauthorized("You are not logged in");
     }
 
     [HttpGet("Logout")]
     public IActionResult Logout()
     {
+        LoggedIn = LoginStatus.LoggedOut;
         return Ok("Logged out");
     }
 
