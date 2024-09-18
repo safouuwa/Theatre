@@ -1,3 +1,4 @@
+using System.Data.Common;
 using StarterKit.Models;
 using StarterKit.Utils;
 
@@ -20,6 +21,8 @@ public class LoginService : ILoginService
     public LoginStatus CheckPassword(string username, string inputPassword)
     {
         // TODO: Make this method check the password with what is in the database
+        if (_context.Admin.Any(x => x.UserName == username && x.Password == EncryptionHelper.EncryptPassword(inputPassword))) return LoginStatus.Success;
+        if (_context.Admin.Any(x => x.UserName != username && x.Password == EncryptionHelper.EncryptPassword(inputPassword))) return LoginStatus.IncorrectUsername;
         return LoginStatus.IncorrectPassword;
     }
 }
