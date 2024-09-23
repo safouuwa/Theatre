@@ -1,6 +1,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using StarterKit.Services;
+using StarterKit.Models;
 
 namespace StarterKit.Controllers;
 
