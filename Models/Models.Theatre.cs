@@ -35,7 +35,7 @@ namespace StarterKit.Models
         public DateTime DateAndTime { get; set; } //"MM-dd-yyyy HH:mm"
 
         public List<Reservation>? Reservations { get; set; }
-
+        [JsonIgnore]
         public TheatreShow? TheatreShow { get; set; }
 
     }
@@ -63,7 +63,7 @@ namespace StarterKit.Models
         public string? Name { get; set; }
 
         public int Capacity { get; set; }
-
+        [JsonIgnore]
         public List<TheatreShow>? TheatreShows { get; set; }
     }
 }

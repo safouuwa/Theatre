@@ -1,4 +1,6 @@
 using System.Data.Common;
+using Microsoft.AspNetCore.Mvc;
+using StarterKit.Controllers;
 using StarterKit.Models;
 using StarterKit.Utils;
 
@@ -33,5 +35,25 @@ public class TheatreShowService : ITheatreShowService
             t.Venue.TheatreShows = null;
         }
         return mainlist;
+    }
+
+    public TheatreShow PostTheatreShow(TheatreShow theatreShow)
+    {
+        if (LoginController.LoggedIn != LoginStatus.Success) return null;
+        if (theatreShow == null) Console.WriteLine("bruh");
+        var existingVenue = _context.Venue.FirstOrDefault(x => x.VenueId == theatreShow.Venue.VenueId);
+        if (existingVenue == null)
+        {
+            _context.Venue.Add(theatreShow.Venue);
+        }
+        else
+        {
+            theatreShow.Venue = existingVenue;
+        }
+        _context.TheatreShow.Add(theatreShow);
+        foreach (TheatreShowDate t in theatreShow.theatreShowDates) _context.TheatreShowDate.Add(t);
+        _context.SaveChanges();
+        return theatreShow;
+        
     }
 }

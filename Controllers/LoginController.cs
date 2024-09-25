@@ -10,7 +10,7 @@ namespace StarterKit.Controllers;
 public class LoginController : Controller
 {
     private readonly ILoginService _loginService;
-    private static LoginStatus LoggedIn;
+    public static LoginStatus LoggedIn;
     
 
     public LoginController(ILoginService loginService)
