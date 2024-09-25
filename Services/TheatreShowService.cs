@@ -16,7 +16,15 @@ public class TheatreShowService : ITheatreShowService
 
     public List<TheatreShow> RetrieveAll()
     {
-        List<TheatreShow> mainlist = _context.TheatreShow.ToList();
+        List<TheatreShow> mainlist = _context.TheatreShow.ToList().Select(show => new TheatreShow
+        {
+            TheatreShowId = show.TheatreShowId,
+            Title = show.Title,
+            Description = show.Description,
+            Price = show.Price,
+            theatreShowDates = show.theatreShowDates,
+            Venue = show.Venue
+        }).ToList();
         foreach (TheatreShow t in mainlist)
         {
             t.theatreShowDates = _context.TheatreShowDate.Where(x => x.TheatreShow == t).ToList();
