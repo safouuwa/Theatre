@@ -31,5 +31,15 @@ public class TheatreShowController : Controller
         if (show is 2) return Unauthorized("Given data does not exist in database; nothing to update");
         return Ok($" {theatreShow.Title} updated in the database!");
     }
+
+    [HttpDelete("{showid}")]
+    public IActionResult DeleteTheatreShow([FromRoute] int showid)
+    {
+        Console.WriteLine(showid);
+        KeyValuePair<TheatreShow,int> show = _theatreShowService.DeleteTheatreShow(showid);
+        if (show.Value is 1) return Unauthorized("Admin is not logged in; no access to this feature");
+        if (show.Value is 2) return Unauthorized("Given data does not exist in database; nothing to delete");
+        return Ok($" {show.Key.Title} deleted from the database!");
+    }
 }
 
