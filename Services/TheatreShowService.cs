@@ -40,7 +40,6 @@ public class TheatreShowService : ITheatreShowService
     public TheatreShow PostTheatreShow(TheatreShow theatreShow)
     {
         if (LoginController.LoggedIn != LoginStatus.Success) return null;
-        if (theatreShow == null) Console.WriteLine("bruh");
         var existingVenue = _context.Venue.FirstOrDefault(x => x.VenueId == theatreShow.Venue.VenueId);
         if (existingVenue == null)
         {
@@ -55,5 +54,15 @@ public class TheatreShowService : ITheatreShowService
         _context.SaveChanges();
         return theatreShow;
         
+    }
+
+    public int UpdateTheatreShow(TheatreShow theatreShow)
+    {
+        if (LoginController.LoggedIn != LoginStatus.Success) return 1;
+        if (!_context.TheatreShow.Any(x => x.TheatreShowId == theatreShow.TheatreShowId)) return 2;
+        _context.TheatreShow.Remove(_context.TheatreShow.FirstOrDefault(x => x.TheatreShowId == theatreShow.TheatreShowId));
+        foreach (TheatreShowDate t in _context.TheatreShowDate.Where(x => x.TheatreShow.TheatreShowId == theatreShow.TheatreShowId)) _context.TheatreShowDate.Remove(t);
+        PostTheatreShow(theatreShow);
+        return 0;
     }
 }

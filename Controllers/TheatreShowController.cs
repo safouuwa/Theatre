@@ -22,5 +22,14 @@ public class TheatreShowController : Controller
         if (show is null) return Unauthorized("Admin is not logged in; no access to this feature");
         return Ok($" {show.Title} added to the database!");
     }
+
+    [HttpPut("Update")]
+    public IActionResult UpdateTheatreShow([FromBody] TheatreShow theatreShow)
+    {
+        int show = _theatreShowService.UpdateTheatreShow(theatreShow);
+        if (show is 1) return Unauthorized("Admin is not logged in; no access to this feature");
+        if (show is 2) return Unauthorized("Given data does not exist in database; nothing to update");
+        return Ok($" {theatreShow.Title} updated in the database!");
+    }
 }
 

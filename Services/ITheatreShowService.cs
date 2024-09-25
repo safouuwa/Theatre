@@ -5,4 +5,5 @@ public interface ITheatreShowService
 {
     public List<TheatreShow> RetrieveAll();
     public TheatreShow PostTheatreShow(TheatreShow theatreShow);
+    public int UpdateTheatreShow(TheatreShow theatreShow);
 }
