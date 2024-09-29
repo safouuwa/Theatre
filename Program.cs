@@ -14,6 +14,8 @@ namespace StarterKit
 
             builder.Services.AddDistributedMemoryCache();
 
+            
+
             builder.Services.AddSession(options => 
             {
                 options.IdleTimeout = TimeSpan.FromSeconds(10);
@@ -22,6 +24,7 @@ namespace StarterKit
             });
 
             builder.Services.AddScoped<ILoginService, LoginService>();
+            builder.Services.AddScoped<ITheatreShowService, TheatreShowService>();
 
             builder.Services.AddDbContext<DatabaseContext>(
                 options => options.UseSqlite(builder.Configuration.GetConnectionString("SqlLiteDb")));

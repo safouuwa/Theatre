@@ -1,6 +1,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using StarterKit.Services;
+using StarterKit.Models;
 
 namespace StarterKit.Controllers;
 
@@ -9,7 +10,7 @@ namespace StarterKit.Controllers;
 public class LoginController : Controller
 {
     private readonly ILoginService _loginService;
-    private static LoginStatus LoggedIn;
+    public static LoginStatus LoggedIn;
     
 
     public LoginController(ILoginService loginService)
