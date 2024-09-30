@@ -17,24 +17,31 @@ public class TheatreShowService : ITheatreShowService
     }
 
     public List<TheatreShow> RetrieveAll()
-    {
-        List<TheatreShow> mainlist = _context.TheatreShow.ToList().Select(show => new TheatreShow
         {
-            TheatreShowId = show.TheatreShowId,
-            Title = show.Title,
-            Description = show.Description,
-            Price = show.Price,
-            theatreShowDates = show.theatreShowDates,
-            Venue = show.Venue
-        }).ToList();
-        foreach (TheatreShow t in mainlist)
-        {
-            t.theatreShowDates = _context.TheatreShowDate.Where(x => x.TheatreShow == t).ToList();
-            foreach (TheatreShowDate ts in t.theatreShowDates) ts.TheatreShow = null;
-            t.Venue = _context.Venue.FirstOrDefault(x => x.TheatreShows.Contains(t));
-            t.Venue.TheatreShows = null;
+            var theatreShows = _context.TheatreShow
+                .Select(show => new TheatreShow
+                {
+                    TheatreShowId = show.TheatreShowId,
+                    Title = show.Title,
+                    Description = show.Description,
+                    Price = show.Price,
+                    theatreShowDates = show.theatreShowDates,
+                    Venue = show.Venue
+                }).ToList();
+
+            foreach (var show in theatreShows)
+            {
+                show.theatreShowDates = _context.TheatreShowDate
+                    .Where(date => date.TheatreShow == show)
+                    .ToList();
+            }
+
+            return theatreShows;
         }
-        return mainlist;
+
+    public TheatreShow RetrieveById(int id)
+    {
+        return _context.TheatreShow.FirstOrDefault(show => show.TheatreShowId == id);
     }
 
     public TheatreShow PostTheatreShow(TheatreShow theatreShow)

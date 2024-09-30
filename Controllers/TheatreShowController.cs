@@ -15,6 +15,32 @@ public class TheatreShowController : Controller
     [HttpGet()]
     public IActionResult ShowAll() => Ok(_theatreShowService.RetrieveAll());
 
+    [HttpGet("id/{id}")]
+    public IActionResult Get(int id)
+    {
+        if (id <= 0)
+        {
+            return BadRequest("Invalid ID provided");
+        }
+    
+        try
+        {
+            Console.WriteLine($"Retrieving show with ID: {id}");
+            var show = _theatreShowService?.RetrieveById(id);
+            if (show == null)
+            {
+                Console.WriteLine("Theatre show not found");
+                return NotFound("Theatre show not found in the database");
+            }
+            return Ok(show);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception: {ex.Message}");
+            return StatusCode(500, "An error occurred while processing your request");
+        }
+    }
+
     [HttpPost()]
     public IActionResult PostTheatreShow([FromBody]TheatreShow theatreShow)
     {
