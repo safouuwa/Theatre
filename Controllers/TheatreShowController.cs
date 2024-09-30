@@ -16,30 +16,15 @@ public class TheatreShowController : Controller
     public IActionResult ShowAll() => Ok(_theatreShowService.RetrieveAll());
 
     [HttpGet("id/{id}")]
-    public IActionResult Get(int id)
-    {
-        if (id <= 0)
+        public IActionResult Get(int id)
         {
-            return BadRequest("Invalid ID provided");
-        }
-    
-        try
-        {
-            Console.WriteLine($"Retrieving show with ID: {id}");
-            var show = _theatreShowService?.RetrieveById(id);
+            var show = _theatreShowService.RetrieveById(id);
             if (show == null)
             {
-                Console.WriteLine("Theatre show not found");
                 return NotFound("Theatre show not found in the database");
             }
             return Ok(show);
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Exception: {ex.Message}");
-            return StatusCode(500, "An error occurred while processing your request");
-        }
-    }
 
     [HttpPost()]
     public IActionResult PostTheatreShow([FromBody]TheatreShow theatreShow)
@@ -66,6 +51,21 @@ public class TheatreShowController : Controller
         if (show.Value is 1) return Unauthorized("Admin is not logged in; no access to this feature");
         if (show.Value is 2) return Unauthorized("Given data does not exist in database; nothing to delete");
         return Ok($" {show.Key.Title} deleted from the database!");
+    }
+
+    [HttpGet("filter")]
+    public IActionResult GetTheatreShows(
+        int? id = null,
+        string title = null,
+        string description = null,
+        string location = null,
+        DateTime? startDate = null,
+        DateTime? endDate = null,
+        string sortBy = "title",
+        string sortOrder = "asc")
+    {
+        var shows = _theatreShowService.GetTheatreShows(id, title, description, location, startDate, endDate, sortBy, sortOrder);
+        return Ok(shows);
     }
 }
 

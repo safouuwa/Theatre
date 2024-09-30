@@ -6,7 +6,7 @@ using StarterKit.Utils;
 
 namespace StarterKit.Services;
 
-public class TheatreShowService : ITheatreShowService
+public class TheatreShowService : ControllerBase, ITheatreShowService
 {
 
     private readonly DatabaseContext _context;
@@ -46,8 +46,7 @@ public class TheatreShowService : ITheatreShowService
 
     public TheatreShow PostTheatreShow(TheatreShow theatreShow)
     {
-        if (LoginController.LoggedIn != LoginStatus.Success) return null;
-        var existingVenue = _context.Venue.FirstOrDefault(x => x.VenueId == theatreShow.Venue.VenueId);
+        var existingVenue = _context.Venue.FirstOrDefault(v => v.VenueId == theatreShow.Venue.VenueId);
         if (existingVenue == null)
         {
             _context.Venue.Add(theatreShow.Venue);
@@ -56,13 +55,17 @@ public class TheatreShowService : ITheatreShowService
         {
             theatreShow.Venue = existingVenue;
         }
+    
         _context.TheatreShow.Add(theatreShow);
-        foreach (TheatreShowDate t in theatreShow.theatreShowDates) _context.TheatreShowDate.Add(t);
+        foreach (TheatreShowDate t in theatreShow.theatreShowDates)
+        {
+            _context.TheatreShowDate.Add(t);
+        }
+    
         _context.SaveChanges();
         return theatreShow;
-        
     }
-
+    
     public int UpdateTheatreShow(TheatreShow theatreShow)
     {
         if (LoginController.LoggedIn != LoginStatus.Success) return 1;
@@ -72,8 +75,8 @@ public class TheatreShowService : ITheatreShowService
         PostTheatreShow(theatreShow);
         return 0;
     }
-
-    public KeyValuePair<TheatreShow,int> DeleteTheatreShow(int showid)
+    
+     public KeyValuePair<TheatreShow,int> DeleteTheatreShow(int showid)
     {
         if (LoginController.LoggedIn != LoginStatus.Success) return new KeyValuePair<TheatreShow, int>(null, 1);
         if (!_context.TheatreShow.Any(x => x.TheatreShowId == showid)) return new KeyValuePair<TheatreShow, int>(null, 2);
@@ -83,4 +86,67 @@ public class TheatreShowService : ITheatreShowService
         _context.SaveChanges();
         return new KeyValuePair<TheatreShow, int>(show, 0);
     }
+
+    [HttpGet]
+    public List<TheatreShow> GetTheatreShows(
+        int? id = null,
+        string title = null,
+        string description = null,
+        string location = null,
+        DateTime? startDate = null,
+        DateTime? endDate = null,
+        string sortBy = "title",
+        string sortOrder = "asc")
+    {
+        var theatreShows = _context.TheatreShow.AsQueryable();
+    
+        if (id.HasValue)
+        {
+            theatreShows = theatreShows.Where(s => s.TheatreShowId == id.Value);
+        }
+    
+        if (!string.IsNullOrEmpty(title))
+        {
+            theatreShows = theatreShows.Where(s => s.Title.Contains(title));
+        }
+    
+        if (!string.IsNullOrEmpty(description))
+        {
+            theatreShows = theatreShows.Where(s => s.Description.Contains(description));
+        }
+    
+        if (!string.IsNullOrEmpty(location))
+        {
+            theatreShows = theatreShows.Where(s => s.Venue.Name.Contains(location));
+        }
+    
+        if (startDate.HasValue)
+        {
+            theatreShows = theatreShows.Where(s => s.theatreShowDates.Any(d => d.DateAndTime >= startDate.Value));
+        }
+    
+        if (endDate.HasValue)
+        {
+            theatreShows = theatreShows.Where(s => s.theatreShowDates.Any(d => d.DateAndTime <= endDate.Value));
+        }
+    
+        switch (sortBy.ToLower())
+        {
+            case "title":
+                theatreShows = sortOrder.ToLower() == "desc" ? theatreShows.OrderByDescending(s => s.Title) : theatreShows.OrderBy(s => s.Title);
+                break;
+            case "price":
+                theatreShows = sortOrder.ToLower() == "desc" ? theatreShows.OrderByDescending(s => s.Price) : theatreShows.OrderBy(s => s.Price);
+                break;
+            case "date":
+                theatreShows = sortOrder.ToLower() == "desc" ? theatreShows.OrderByDescending(s => s.theatreShowDates.Min(d => d.DateAndTime)) : theatreShows.OrderBy(s => s.theatreShowDates.Min(d => d.DateAndTime));
+                break;
+            default:
+                theatreShows = theatreShows.OrderBy(s => s.Title);
+                break;
+        }
+    
+        return theatreShows.ToList();
+    }
 }
+    
