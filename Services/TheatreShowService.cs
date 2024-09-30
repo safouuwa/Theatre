@@ -178,7 +178,7 @@ public class TheatreShowService : ControllerBase, ITheatreShowService
 
         if (_context.TheatreShowDate.First().DateAndTime >= startDate && _context.TheatreShowDate.First().DateAndTime <= endDate) Console.WriteLine("Cool");
         // Retrieve TheatreShows within the date range
-        var theatreShowsdates = _context.TheatreShowDate.Where(showDate => showDate.DateAndTime == startDate).ToList();
+        var theatreShowsdates = _context.TheatreShowDate.Where(showDate => showDate.DateAndTime >= startDate && showDate.DateAndTime <= endDate).ToList();
         var theatreShows = theatreShowsdates.Select(showDate => showDate.TheatreShow).ToList();
 
         return theatreShows;
