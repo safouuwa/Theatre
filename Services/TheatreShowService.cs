@@ -5,6 +5,7 @@ using StarterKit.Models;
 using StarterKit.Utils;
 using System.Collections.Generic;
 using System.Globalization;
+using Microsoft.EntityFrameworkCore;
 
 namespace StarterKit.Services;
 
@@ -18,23 +19,50 @@ public class TheatreShowService : ControllerBase, ITheatreShowService
         _context = context;
     }
 
-    public List<TheatreShow> RetrieveAll()
-        {
-            var theatreShows = _context.TheatreShow.ToList();
-
-            foreach (var show in theatreShows)
-            {
-                show.theatreShowDates = _context.TheatreShowDate
-                    .Where(date => date.TheatreShow == show)
-                    .ToList();
-            }
-
-            return theatreShows;
-        }
-
-    public TheatreShow RetrieveById(int id)
+    private static TheatreShowDisplayModel ConvertToTheatreShowDisplayModel(TheatreShow show)
     {
-        return _context.TheatreShow.FirstOrDefault(show => show.TheatreShowId == id);
+        if (show == null) return null;
+        Console.WriteLine($"{show.TheatreShowId}");
+        return new TheatreShowDisplayModel
+        {
+            TheatreShowId = show.TheatreShowId,
+            Title = show.Title,
+            Description = show.Description,
+            Price = show.Price,
+            Venue = new VenueDisplayModel
+            {
+                VenueId = show.Venue?.VenueId ?? 0,
+                Name = show.Venue?.Name,
+                Capacity = show.Venue.Capacity
+            },
+            TheatreShowDates = show.theatreShowDates?.Select(date => new TheatreShowDateDisplayModel
+            {
+                TheatreShowDateId = date.TheatreShowDateId,
+                DateAndTime = date.DateAndTime,
+                TheatreShowId = show.TheatreShowId
+            }).ToList()
+        };
+    }
+
+
+    public List<TheatreShowDisplayModel> RetrieveAll()
+{
+    var theatreShows = _context.TheatreShow
+        .Include(show => show.Venue)
+        .Include(show => show.theatreShowDates)
+        .ToList();
+
+    return theatreShows.Select(show => ConvertToTheatreShowDisplayModel(show)).ToList();
+}
+
+public TheatreShowDisplayModel RetrieveById(int id)
+{
+    var show = _context.TheatreShow
+        .Include(s => s.Venue)
+        .Include(s => s.theatreShowDates)
+        .FirstOrDefault(s => s.TheatreShowId == id);
+
+    return show == null ? null : ConvertToTheatreShowDisplayModel(show);
     }
 
     public TheatreShow PostTheatreShow(TheatreShow theatreShow)
@@ -80,8 +108,8 @@ public class TheatreShowService : ControllerBase, ITheatreShowService
         return new KeyValuePair<TheatreShow, int>(show, 0);
     }
 
-    [HttpGet]
-    public List<TheatreShow> GetTheatreShows(
+
+    public List<TheatreShowDisplayModel> GetTheatreShows(
         int? id = null,
         string title = null,
         string description = null,
@@ -142,7 +170,8 @@ public class TheatreShowService : ControllerBase, ITheatreShowService
                 break;
         }
     
-        return theatreShows.ToList();
+        var theatreShows1 = theatreShows.ToList();
+        return theatreShows1.Select(show => ConvertToTheatreShowDisplayModel(show)).ToList();
     }
 
     public List<TheatreShow> GetTheatreShowRange(string startdate, string enddate)

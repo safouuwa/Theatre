@@ -16,15 +16,15 @@ public class TheatreShowController : Controller
     public IActionResult ShowAll() => Ok(_theatreShowService.RetrieveAll());
 
     [HttpGet("id/{id}")]
-        public IActionResult Get(int id)
+    public IActionResult Get(int id)
+    {
+        var show = _theatreShowService.RetrieveById(id);
+        if (show == null)
         {
-            var show = _theatreShowService.RetrieveById(id);
-            if (show == null)
-            {
-                return NotFound("Theatre show not found in the database");
-            }
-            return Ok(show);
+            return NotFound("Theatre show not found in the database");
         }
+        return Ok(show);
+    }
 
     [HttpPost()]
     public IActionResult PostTheatreShow([FromBody]TheatreShow theatreShow)

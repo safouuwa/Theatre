@@ -3,14 +3,14 @@ namespace StarterKit.Services;
 
 public interface ITheatreShowService
 {
-    public List<TheatreShow> RetrieveAll();
+    public List<TheatreShowDisplayModel> RetrieveAll();
     public TheatreShow PostTheatreShow(TheatreShow theatreShow);
     public int UpdateTheatreShow(TheatreShow theatreShow);
     public KeyValuePair<TheatreShow, int> DeleteTheatreShow(int showid);
     
-    public TheatreShow RetrieveById(int id); 
+    public TheatreShowDisplayModel RetrieveById(int id); 
      // New method for filtering and sorting theatre shows
-        List<TheatreShow> GetTheatreShows(
+    public List<TheatreShowDisplayModel> GetTheatreShows(
             int? id = null,
             string title = null,
             string description = null,
