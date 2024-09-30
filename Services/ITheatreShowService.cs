@@ -20,6 +20,6 @@ public interface ITheatreShowService
             string sortBy = "title",
             string sortOrder = "asc");
 
-    public List<TheatreShow> GetTheatreShowRange(string startdate, string enddate);
+    public List<TheatreShowDisplayModel> GetTheatreShowRange(string startdate, string enddate);
     
 }

@@ -6,6 +6,7 @@ using StarterKit.Utils;
 using System.Collections.Generic;
 using System.Globalization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace StarterKit.Services;
 
@@ -21,8 +22,13 @@ public class TheatreShowService : ControllerBase, ITheatreShowService
 
     private static TheatreShowDisplayModel ConvertToTheatreShowDisplayModel(TheatreShow show)
     {
-        if (show == null) return null;
+        if (show is null) return null;
         Console.WriteLine($"{show.TheatreShowId}");
+        Console.WriteLine($"{show.Title}");
+        Console.WriteLine($"{show.Description}");
+        Console.WriteLine($"{show.Price}");
+        Console.WriteLine($"{show.Venue}");
+        Console.WriteLine($"{show.theatreShowDates}");
         return new TheatreShowDisplayModel
         {
             TheatreShowId = show.TheatreShowId,
@@ -119,7 +125,7 @@ public TheatreShowDisplayModel RetrieveById(int id)
         string sortBy = "title",
         string sortOrder = "asc")
     {
-        var theatreShows = _context.TheatreShow.AsQueryable();
+        var theatreShows = _context.TheatreShow.Include(show => show.Venue).Include(show => show.theatreShowDates).AsQueryable();
     
         if (id.HasValue)
         {
@@ -174,7 +180,7 @@ public TheatreShowDisplayModel RetrieveById(int id)
         return theatreShows1.Select(show => ConvertToTheatreShowDisplayModel(show)).ToList();
     }
 
-    public List<TheatreShow> GetTheatreShowRange(string startdate, string enddate)
+    public List<TheatreShowDisplayModel> GetTheatreShowRange(string startdate, string enddate)
     {
         string format = "MM-dd-yyyy";
         Console.WriteLine($"Received Start Date: {startdate}");
@@ -187,16 +193,23 @@ public TheatreShowDisplayModel RetrieveById(int id)
             throw new ArgumentException("Invalid date format. Please use 'MM-dd-yyyy'.");
         }
 
-        // Ensure end date is greater than or equal to start date
         if (endDate < startDate)
         {
             throw new ArgumentException("End date must be greater than or equal to start date.");
         }
 
-        var theatreShowsdates = _context.TheatreShowDate.Where(showDate => showDate.DateAndTime >= startDate && showDate.DateAndTime <= endDate).ToList();
-        var theatreShows = theatreShowsdates.Select(showDate => showDate.TheatreShow).ToList();
+        var dates = _context.TheatreShowDate
+        .Include(s => s.TheatreShow)
+        .ToList();
 
-        return theatreShows;
+        var theatreShows = dates.Where(showDate => showDate.DateAndTime >= startDate && showDate.DateAndTime <= endDate).ToList();
+        var newtheatreShows = theatreShows.Select(x => x.TheatreShow.TheatreShowId).ToList();
+
+        var shows = newtheatreShows.Select(id => _context.TheatreShow.Include(x => x.Venue).First(x => x.TheatreShowId == id)).ToList();
+
+        // Now you can convert to the display model
+        return shows.Select(show => ConvertToTheatreShowDisplayModel(show)).ToList();
+
     }
 }
-    
+
