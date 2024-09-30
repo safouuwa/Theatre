@@ -53,7 +53,6 @@ namespace StarterKit.Models
         public List<TheatreShowDate>? theatreShowDates { get; set; }
 
         public Venue? Venue { get; set; }
-        public DateTime Date { get; set; }
 
     }
 
