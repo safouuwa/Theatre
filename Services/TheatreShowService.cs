@@ -20,16 +20,7 @@ public class TheatreShowService : ControllerBase, ITheatreShowService
 
     public List<TheatreShow> RetrieveAll()
         {
-            var theatreShows = _context.TheatreShow
-                .Select(show => new TheatreShow
-                {
-                    TheatreShowId = show.TheatreShowId,
-                    Title = show.Title,
-                    Description = show.Description,
-                    Price = show.Price,
-                    theatreShowDates = show.theatreShowDates,
-                    Venue = show.Venue
-                }).ToList();
+            var theatreShows = _context.TheatreShow.ToList();
 
             foreach (var show in theatreShows)
             {
@@ -172,12 +163,7 @@ public class TheatreShowService : ControllerBase, ITheatreShowService
         {
             throw new ArgumentException("End date must be greater than or equal to start date.");
         }
-        Console.WriteLine($"{startDate}");
-        Console.WriteLine($"{endDate}");
-        Console.WriteLine($"{_context.TheatreShowDate.First().DateAndTime.GetType()}");
 
-        if (_context.TheatreShowDate.First().DateAndTime >= startDate && _context.TheatreShowDate.First().DateAndTime <= endDate) Console.WriteLine("Cool");
-        // Retrieve TheatreShows within the date range
         var theatreShowsdates = _context.TheatreShowDate.Where(showDate => showDate.DateAndTime >= startDate && showDate.DateAndTime <= endDate).ToList();
         var theatreShows = theatreShowsdates.Select(showDate => showDate.TheatreShow).ToList();
 
