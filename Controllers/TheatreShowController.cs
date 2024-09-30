@@ -61,10 +61,16 @@ public class TheatreShowController : Controller
         string location = null,
         DateTime? startDate = null,
         DateTime? endDate = null,
-        string sortBy = "title",
+        string sortBy = "location",
         string sortOrder = "asc")
     {
         var shows = _theatreShowService.GetTheatreShows(id, title, description, location, startDate, endDate, sortBy, sortOrder);
+        return Ok(shows);
+    }
+    [HttpGet("filter/{startdate}/{enddate}")]
+    public IActionResult GetTheatreShows([FromRoute]string startdate, [FromRoute]string enddate)
+    {
+        var shows = _theatreShowService.GetTheatreShowRange(startdate, enddate);
         return Ok(shows);
     }
 }

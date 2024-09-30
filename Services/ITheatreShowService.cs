@@ -19,5 +19,7 @@ public interface ITheatreShowService
             DateTime? endDate = null,
             string sortBy = "title",
             string sortOrder = "asc");
+
+    public List<TheatreShow> GetTheatreShowRange(string startdate, string enddate);
     
 }

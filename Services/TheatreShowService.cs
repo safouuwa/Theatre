@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using StarterKit.Controllers;
 using StarterKit.Models;
 using StarterKit.Utils;
+using System.Collections.Generic;
+using System.Globalization;
 
 namespace StarterKit.Services;
 
@@ -141,12 +143,45 @@ public class TheatreShowService : ControllerBase, ITheatreShowService
             case "date":
                 theatreShows = sortOrder.ToLower() == "desc" ? theatreShows.OrderByDescending(s => s.theatreShowDates.Min(d => d.DateAndTime)) : theatreShows.OrderBy(s => s.theatreShowDates.Min(d => d.DateAndTime));
                 break;
+            case "location":
+                theatreShows = sortOrder.ToLower() == "desc" ? theatreShows.OrderByDescending(s => s.Venue.VenueId) : theatreShows.OrderBy(s => s.Venue);
+                break;
             default:
                 theatreShows = theatreShows.OrderBy(s => s.Title);
                 break;
         }
     
         return theatreShows.ToList();
+    }
+
+    public List<TheatreShow> GetTheatreShowRange(string startdate, string enddate)
+    {
+        string format = "MM-dd-yyyy";
+        Console.WriteLine($"Received Start Date: {startdate}");
+        Console.WriteLine($"Received End Date: {enddate}");
+
+        // Convert string dates to DateTime
+        if (!DateTime.TryParseExact(startdate, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime startDate) ||
+            !DateTime.TryParseExact(enddate, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime endDate))
+        {
+            throw new ArgumentException("Invalid date format. Please use 'MM-dd-yyyy'.");
+        }
+
+        // Ensure end date is greater than or equal to start date
+        if (endDate < startDate)
+        {
+            throw new ArgumentException("End date must be greater than or equal to start date.");
+        }
+        Console.WriteLine($"{startDate}");
+        Console.WriteLine($"{endDate}");
+        Console.WriteLine($"{_context.TheatreShowDate.First().DateAndTime.GetType()}");
+
+        if (_context.TheatreShowDate.First().DateAndTime >= startDate && _context.TheatreShowDate.First().DateAndTime <= endDate) Console.WriteLine("Cool");
+        // Retrieve TheatreShows within the date range
+        var theatreShowsdates = _context.TheatreShowDate.Where(showDate => showDate.DateAndTime == startDate).ToList();
+        var theatreShows = theatreShowsdates.Select(showDate => showDate.TheatreShow).ToList();
+
+        return theatreShows;
     }
 }
     
