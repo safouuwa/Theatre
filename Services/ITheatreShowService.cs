@@ -10,15 +10,13 @@ public interface ITheatreShowService
     
     public TheatreShowDisplayModel RetrieveById(int id); 
      // New method for filtering and sorting theatre shows
-    public List<TheatreShowDisplayModel> GetTheatreShows(
+    public List<TheatreShowDisplayModel> GetTheatreShows(string sortBy, string sortOrder,
             int? id = null,
             string title = null,
             string description = null,
             string location = null,
             DateTime? startDate = null,
-            DateTime? endDate = null,
-            string sortBy = "title",
-            string sortOrder = "asc");
+            DateTime? endDate = null);
 
     public List<TheatreShowDisplayModel> GetTheatreShowRange(string startdate, string enddate);
     

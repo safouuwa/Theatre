@@ -115,16 +115,15 @@ public TheatreShowDisplayModel RetrieveById(int id)
     }
 
 
-    public List<TheatreShowDisplayModel> GetTheatreShows(
+    public List<TheatreShowDisplayModel> GetTheatreShows(string sortBy, string sortOrder,
         int? id = null,
         string title = null,
         string description = null,
         string location = null,
         DateTime? startDate = null,
-        DateTime? endDate = null,
-        string sortBy = "title",
-        string sortOrder = "asc")
+        DateTime? endDate = null)
     {
+        if (sortOrder.ToLower() != "desc" && sortOrder.ToLower() != "asc") throw new ArgumentException("No valid sort order given; please enter 'asc' for ascending order of 'desc' for descending order.");
         var theatreShows = _context.TheatreShow.Include(show => show.Venue).Include(show => show.theatreShowDates).AsQueryable();
     
         if (id.HasValue)
@@ -165,17 +164,14 @@ public TheatreShowDisplayModel RetrieveById(int id)
             case "price":
                 theatreShows = sortOrder.ToLower() == "desc" ? theatreShows.OrderByDescending(s => s.Price) : theatreShows.OrderBy(s => s.Price);
                 break;
-            case "date":
-                theatreShows = sortOrder.ToLower() == "desc" ? theatreShows.OrderByDescending(s => s.theatreShowDates.Min(d => d.DateAndTime)) : theatreShows.OrderBy(s => s.theatreShowDates.Min(d => d.DateAndTime));
-                break;
             case "location":
                 theatreShows = sortOrder.ToLower() == "desc" ? theatreShows.OrderByDescending(s => s.Venue.VenueId) : theatreShows.OrderBy(s => s.Venue);
                 break;
             default:
-                theatreShows = theatreShows.OrderBy(s => s.Title);
+                theatreShows = null;
                 break;
         }
-    
+        if (theatreShows is null) throw new ArgumentException("No valid sort criteria given");;
         var theatreShows1 = theatreShows.ToList();
         return theatreShows1.Select(show => ConvertToTheatreShowDisplayModel(show)).ToList();
     }
@@ -183,8 +179,6 @@ public TheatreShowDisplayModel RetrieveById(int id)
     public List<TheatreShowDisplayModel> GetTheatreShowRange(string startdate, string enddate)
     {
         string format = "MM-dd-yyyy";
-        Console.WriteLine($"Received Start Date: {startdate}");
-        Console.WriteLine($"Received End Date: {enddate}");
 
         // Convert string dates to DateTime
         if (!DateTime.TryParseExact(startdate, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime startDate) ||

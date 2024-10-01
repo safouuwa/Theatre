@@ -53,22 +53,21 @@ public class TheatreShowController : Controller
         return Ok($" {show.Key.Title} deleted from the database!");
     }
 
-    [HttpGet("filter")]
-    public IActionResult GetTheatreShows(
+    [HttpGet("filter/{sortBy}/{sortOrder}")]
+    public IActionResult GetTheatreShows([FromRoute]string sortBy, [FromRoute]string sortOrder,
         int? id = null,
         string title = null,
         string description = null,
         string location = null,
         DateTime? startDate = null,
-        DateTime? endDate = null,
-        string sortBy = "location",
-        string sortOrder = "asc")
+        DateTime? endDate = null)
     {
-        var shows = _theatreShowService.GetTheatreShows(id, title, description, location, startDate, endDate, sortBy, sortOrder);
+        var shows = _theatreShowService.GetTheatreShows(sortBy, sortOrder, id, title, description, location, startDate, endDate);
+        if (shows is null) return NotFound("No correct sort criteria given");
         return Ok(shows);
     }
-    [HttpGet("filter/{startdate}/{enddate}")]
-    public IActionResult GetTheatreShows([FromRoute]string startdate, [FromRoute]string enddate)
+    [HttpGet("filter/date/{startdate}/{enddate}")]
+    public IActionResult GetTheatreShowsRange([FromRoute]string startdate, [FromRoute]string enddate)
     {
         var shows = _theatreShowService.GetTheatreShowRange(startdate, enddate);
         return Ok(shows);
