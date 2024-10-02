@@ -161,6 +161,9 @@ public TheatreShowDisplayModel RetrieveById(int id)
             case "title":
                 theatreShows = sortOrder.ToLower() == "desc" ? theatreShows.OrderByDescending(s => s.Title) : theatreShows.OrderBy(s => s.Title);
                 break;
+            case "description":
+                theatreShows = sortOrder.ToLower() == "desc" ? theatreShows.OrderByDescending(s => s.Description) : theatreShows.OrderBy(s => s.Description);
+                break;
             case "price":
                 theatreShows = sortOrder.ToLower() == "desc" ? theatreShows.OrderByDescending(s => s.Price) : theatreShows.OrderBy(s => s.Price);
                 break;
