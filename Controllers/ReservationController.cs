@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using StarterKit.Models;
 using StarterKit.Services;
-using System.Collections.Generic;
-using System.Linq;
+
 
 namespace StarterKit.Controllers
 {
@@ -43,6 +42,11 @@ namespace StarterKit.Controllers
                 if (showDate.TheatreShow == null)
                 {
                     return BadRequest("Theatre show information is missing.");
+                }
+
+                if (showDate.DateAndTime < DateTime.Now)
+                {
+                    return BadRequest($"Show date {showDate.DateAndTime} is in the past.");
                 }
 
                 var venue = showDate.TheatreShow.Venue;
