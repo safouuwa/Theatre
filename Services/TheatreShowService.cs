@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using StarterKit.Controllers;
 using StarterKit.Models;
 using StarterKit.Utils;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace StarterKit.Services;
 
@@ -76,4 +78,13 @@ public class TheatreShowService : ITheatreShowService
         _context.SaveChanges();
         return new KeyValuePair<TheatreShow, int>(show, 0);
     }
+
+    public TheatreShowDate GetShowDateById(int showDateId)
+    {
+        return _context.TheatreShowDate
+                    .Include(sd => sd.TheatreShow)
+                    .ThenInclude(ts => ts.Venue)
+                    .FirstOrDefault(sd => sd.TheatreShowDateId == showDateId);
+    }
+
 }

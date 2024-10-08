@@ -11,6 +11,7 @@ namespace StarterKit
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddControllersWithViews();
+            
 
             builder.Services.AddDistributedMemoryCache();
 
@@ -25,6 +26,8 @@ namespace StarterKit
 
             builder.Services.AddScoped<ILoginService, LoginService>();
             builder.Services.AddScoped<ITheatreShowService, TheatreShowService>();
+            builder.Services.AddScoped<IReservationService, ReservationService>();
+
 
             builder.Services.AddDbContext<DatabaseContext>(
                 options => options.UseSqlite(builder.Configuration.GetConnectionString("SqlLiteDb")));

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using StarterKit.Services;
 using StarterKit.Models;
 
-namespace StarterKit.Controllers;
+    namespace StarterKit.Controllers;
 
 
 [Route("api/v1/TheatreShow")]
