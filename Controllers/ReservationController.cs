@@ -31,41 +31,40 @@ namespace StarterKit.Controllers
             {
                 if (string.IsNullOrWhiteSpace(request.Email))
                 {
-                    return BadRequest("Email cannot be null or empty.");
+                    return BadRequest("Email cannot be null or empty.\nAll reservation requests have been canceled. Please make sure all orders are correct to confirm your reservation(s)");
                 }
                 var showDate = _theatreShowService.GetShowDateById(request.TheatreShowDateId);
 
                 if (showDate == null)
                 {
-                    return NotFound($"Show date with ID {request.TheatreShowDateId} not found.");
+                    return NotFound($"Show date with ID {request.TheatreShowDateId} not found.\nAll reservation requests have been canceled. Please make sure all orders are correct to confirm your reservation(s)");
                 }
                 if (showDate.TheatreShow == null)
                 {
-                    return BadRequest("Theatre show information is missing.");
+                    return BadRequest("Theatre show information is missing.\nAll reservation requests have been canceled. Please make sure all orders are correct to confirm your reservation(s)");
                 }
 
                 if (showDate.DateAndTime < DateTime.Now)
                 {
-                    return BadRequest($"Show date {showDate.DateAndTime} is in the past.");
+                    return BadRequest($"Show date {showDate.DateAndTime} is in the past.\nAll reservation requests have been canceled. Please make sure all orders are correct to confirm your reservation(s)");
                 }
 
                 var venue = showDate.TheatreShow.Venue;
                 if (venue == null)
                 {
-                    return BadRequest("Venue information is missing.");
+                    return BadRequest("Venue information is missing.\nAll reservation requests have been canceled. Please make sure all orders are correct to confirm your reservation(s)");
                 }
                 int reservedTickets = showDate.Reservations?.Sum(r => r.AmountOfTickets) ?? 0;
 
                 if (reservedTickets + request.NumberOfTickets > venue.Capacity)
                 {
-                    return BadRequest($"Not enough tickets available for show date ID {request.TheatreShowDateId}. Requested: {request.NumberOfTickets}, Available: {venue.Capacity - reservedTickets}");
+                    return BadRequest($"Not enough tickets available for show date ID {request.TheatreShowDateId}. Requested: {request.NumberOfTickets}, Available: {venue.Capacity - reservedTickets}\nAll reservation requests have been canceled. Please make sure all orders are correct to confirm your reservation(s)");
                 }
+            }
 
-                if (reservedTickets + request.NumberOfTickets > venue.Capacity)
-                {
-                    return BadRequest($"Not enough tickets available for show date ID {request.TheatreShowDateId}. Requested: {request.NumberOfTickets}, Available: {venue.Capacity - reservedTickets}");
-                }
-
+            foreach (var request in reservationRequests)
+            {
+                var showDate = _theatreShowService.GetShowDateById(request.TheatreShowDateId);
                 totalPrice += showDate.TheatreShow.Price * request.NumberOfTickets;
 
                 var customer = _reservationService.GetCustomerByEmail(request.Email);
