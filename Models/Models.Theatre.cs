@@ -13,6 +13,7 @@ namespace StarterKit.Models
         public List<Reservation>? Reservations { get; set; }
     }
 
+
     public class Reservation
     {
         public int ReservationId { get; set; }

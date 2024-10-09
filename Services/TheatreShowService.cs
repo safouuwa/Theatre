@@ -41,12 +41,35 @@ public class TheatreShowService : ControllerBase, ITheatreShowService
                 Name = show.Venue?.Name,
                 Capacity = show.Venue.Capacity
             },
-            TheatreShowDates = show.theatreShowDates?.Select(date => new TheatreShowDateDisplayModel
+            TheatreShowDates = show.theatreShowDates?.Select(date => new TheatreShowDateDisplayModelForField
             {
                 TheatreShowDateId = date.TheatreShowDateId,
                 DateAndTime = date.DateAndTime,
                 TheatreShowId = show.TheatreShowId
             }).ToList()
+        };
+    }
+
+    private static TheatreShowDateDisplayModel ConvertToTheatreShowDateDisplayModel(TheatreShowDate show)
+    {
+        if (show is null) return null;
+        return new TheatreShowDateDisplayModel
+        {
+            TheatreShowDateId = show.TheatreShowDateId,
+            DateAndTime = show.DateAndTime,
+            TheatreShow = new TheatreShowDisplayModelForField
+            {
+                TheatreShowId = show.TheatreShow.TheatreShowId,
+                Title = show.TheatreShow.Title,
+                Description = show.TheatreShow.Description,
+                Price = show.TheatreShow.Price,
+                Venue = new VenueDisplayModel
+                {
+                    VenueId = show.TheatreShow.Venue?.VenueId ?? 0,
+                    Name = show.TheatreShow.Venue?.Name,
+                    Capacity = show.TheatreShow.Venue.Capacity
+                },
+            }
         };
     }
 
@@ -71,7 +94,7 @@ public TheatreShowDisplayModel RetrieveById(int id)
     return show == null ? null : ConvertToTheatreShowDisplayModel(show);
     }
 
-    public TheatreShow PostTheatreShow(TheatreShow theatreShow)
+    public TheatreShowDisplayModel PostTheatreShow(TheatreShow theatreShow)
     {
         var existingVenue = _context.Venue.FirstOrDefault(v => v.VenueId == theatreShow.Venue.VenueId);
         if (existingVenue == null)
@@ -90,7 +113,7 @@ public TheatreShowDisplayModel RetrieveById(int id)
         }
     
         _context.SaveChanges();
-        return theatreShow;
+        return ConvertToTheatreShowDisplayModel(theatreShow);
     }
     
     public int UpdateTheatreShow(TheatreShow theatreShow)
@@ -113,6 +136,17 @@ public TheatreShowDisplayModel RetrieveById(int id)
         _context.SaveChanges();
         return new KeyValuePair<TheatreShow, int>(show, 0);
     }
+
+    public TheatreShowDate GetShowDateById(int showDateId)
+    {
+        TheatreShowDate date = _context.TheatreShowDate
+                    .Include(x => x.Reservations)
+                    .Include(sd => sd.TheatreShow)
+                    .ThenInclude(ts => ts.Venue)
+                    .FirstOrDefault(sd => sd.TheatreShowDateId == showDateId);
+        return date;
+    }
+
 
 
     public List<TheatreShowDisplayModel> GetTheatreShows(string sortBy, string sortOrder,
