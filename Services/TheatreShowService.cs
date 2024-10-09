@@ -140,6 +140,7 @@ public TheatreShowDisplayModel RetrieveById(int id)
     public TheatreShowDate GetShowDateById(int showDateId)
     {
         TheatreShowDate date = _context.TheatreShowDate
+                    .Include(x => x.Reservations)
                     .Include(sd => sd.TheatreShow)
                     .ThenInclude(ts => ts.Venue)
                     .FirstOrDefault(sd => sd.TheatreShowDateId == showDateId);
