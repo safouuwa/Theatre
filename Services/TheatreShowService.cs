@@ -118,7 +118,7 @@ public TheatreShowDisplayModel RetrieveById(int id)
     
     public int UpdateTheatreShow(TheatreShow theatreShow)
     {
-        if (LoginController.LoggedIn != LoginStatus.Success) return 1;
+        if (LoginController.LoggedIn != LoginStatus.AdminSuccess) return 1;
         if (!_context.TheatreShow.Any(x => x.TheatreShowId == theatreShow.TheatreShowId)) return 2;
         _context.TheatreShow.Remove(_context.TheatreShow.FirstOrDefault(x => x.TheatreShowId == theatreShow.TheatreShowId));
         foreach (TheatreShowDate t in _context.TheatreShowDate.Where(x => x.TheatreShow.TheatreShowId == theatreShow.TheatreShowId)) _context.TheatreShowDate.Remove(t);
@@ -128,7 +128,7 @@ public TheatreShowDisplayModel RetrieveById(int id)
     
      public KeyValuePair<TheatreShow,int> DeleteTheatreShow(int showid)
     {
-        if (LoginController.LoggedIn != LoginStatus.Success) return new KeyValuePair<TheatreShow, int>(null, 1);
+        if (LoginController.LoggedIn != LoginStatus.AdminSuccess) return new KeyValuePair<TheatreShow, int>(null, 1);
         if (!_context.TheatreShow.Any(x => x.TheatreShowId == showid)) return new KeyValuePair<TheatreShow, int>(null, 2);
         foreach (TheatreShowDate t in _context.TheatreShowDate.Where(x => x.TheatreShow.TheatreShowId == showid)) _context.TheatreShowDate.Remove(t);
         TheatreShow show = _context.TheatreShow.FirstOrDefault(x => x.TheatreShowId == showid);
