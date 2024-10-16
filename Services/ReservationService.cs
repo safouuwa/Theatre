@@ -15,7 +15,6 @@ namespace StarterKit.Services
 
         public void AddReservation(Reservation reservation)
         {
-            // Ensure that the customer is attached to the context
             if (reservation.Customer != null)
             {
                 var existingCustomer = _context.Customer
@@ -23,11 +22,10 @@ namespace StarterKit.Services
 
                 if (existingCustomer != null)
                 {
-                    reservation.Customer = existingCustomer; // Use existing customer
-                }
+                    reservation.Customer = existingCustomer; 
                 else
                 {
-                    _context.Customer.Add(reservation.Customer); // Add new customer
+                    _context.Customer.Add(reservation.Customer); 
                 }
             }
             else
@@ -35,7 +33,6 @@ namespace StarterKit.Services
                 throw new ArgumentException("Customer cannot be null");
             }
 
-            // Ensure that the TheatreShowDate is correctly set
             if (reservation.TheatreShowDate != null)
             {
                 var showDate = _context.TheatreShowDate
@@ -47,7 +44,7 @@ namespace StarterKit.Services
                 }
                 else
                 {
-                    reservation.TheatreShowDate = showDate; // Use existing show date
+                    reservation.TheatreShowDate = showDate; 
                 }
             }
             else
@@ -58,7 +55,9 @@ namespace StarterKit.Services
             // Add reservation to the context
             _context.Reservation.Add(reservation);
             _context.SaveChanges();
+            }
         }
+
 
 
         public IEnumerable<Reservation> GetReservations()
@@ -83,7 +82,30 @@ namespace StarterKit.Services
             _context.Customer.Add(customer);
             _context.SaveChanges();
         }
+        public void UpdateReservation(Reservation reservation)
+        {
+            var existingReservation = GetReservationById(reservation.ReservationId);
+            if (existingReservation != null)
+            { 
+                existingReservation.Used = reservation.Used;
+                _context.Reservation.Update(existingReservation);
+                _context.SaveChanges();
+            }
+            else 
+            {
+                throw new ArgumentException("Reservation does not exist");
+            }
+        }
+    
+        public void DeleteReservation(Reservation reservation)
+        {
+            _context.Reservation.Remove(reservation);
+        }
 
-
+        public List<Reservation> GetAllReservations()
+        {
+            return _context.Reservation.ToList();	
+        }   
     }
 }
+
