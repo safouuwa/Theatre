@@ -11,5 +11,10 @@ namespace StarterKit.Services
         public Customer GetCustomerByEmail(string email);
         public void AddCustomer(Customer customer);
 
+        void UpdateReservation(Reservation reservation);
+        bool DeleteReservation(Reservation reservation);
+
+        List<ReservationDisplayModel> GetAllReservations();
+
     }
 }
