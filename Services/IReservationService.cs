@@ -12,7 +12,7 @@ namespace StarterKit.Services
         public void AddCustomer(Customer customer);
 
         void UpdateReservation(Reservation reservation);
-        void DeleteReservation(Reservation reservation);
+        bool DeleteReservation(Reservation reservation);
 
         List<Reservation> GetAllReservations();
 

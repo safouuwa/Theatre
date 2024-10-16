@@ -7,7 +7,6 @@ namespace StarterKit.Controllers
 {
     [Route("api/v1/admin/reservations")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
     public class AdminReservationController : ControllerBase
     {
         private readonly IReservationService _reservationService;
@@ -22,16 +21,23 @@ namespace StarterKit.Controllers
         [HttpGet]
         public IActionResult GetReservations([FromQuery] string? show, [FromQuery] DateTime? date)
         {
+            if (LoginController.LoggedIn != LoginStatus.Success) return Unauthorized();
+
             var reservations = _reservationService.GetAllReservations();
 
             if (!string.IsNullOrEmpty(show))
             {
-                reservations = reservations.Where(r => r.TheatreShowDate.TheatreShow.Name.Equals(show, StringComparison.OrdinalIgnoreCase)).ToList();
+                reservations = reservations.Where(r => r.TheatreShowDate.TheatreShow.Title.Equals(show, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
             if (date.HasValue)
             {
                 reservations = reservations.Where(r => r.TheatreShowDate.DateAndTime.Date == date.Value.Date).ToList();
+            }
+
+            if(reservations is null)
+            {
+                return NotFound("No reservations found for this date or show");
             }
 
             return Ok(reservations);
@@ -40,6 +46,7 @@ namespace StarterKit.Controllers
         [HttpGet("search")]
         public IActionResult SearchReservation([FromQuery] string? email, [FromQuery] string? reservationNumber)
         {
+            if (LoginController.LoggedIn != LoginStatus.Success) return Unauthorized();
             if (string.IsNullOrEmpty(email) && string.IsNullOrEmpty(reservationNumber))
             {
                 return BadRequest("You must provide either an email or a reservation number to search.");
@@ -54,7 +61,12 @@ namespace StarterKit.Controllers
 
             if (!string.IsNullOrEmpty(reservationNumber))
             {
-                reservations = reservations.Where(r => r.ReservationNumber == reservationNumber).ToList();
+                int resnumber;
+                bool correctParse = int.TryParse(reservationNumber, out resnumber);
+                if(correctParse == true)
+                {
+                    reservations = reservations.Where(r => r.ReservationId ==  resnumber).ToList();
+                }
             }
 
             if (!reservations.Any())
@@ -68,6 +80,7 @@ namespace StarterKit.Controllers
         [HttpPatch("{id}/mark-used")]
         public IActionResult MarkReservationAsUsed(int id)
         {
+            if (LoginController.LoggedIn != LoginStatus.Success) return Unauthorized();
             var reservation = _reservationService.GetReservationById(id);
             if (reservation == null)
             {
@@ -88,15 +101,19 @@ namespace StarterKit.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteReservation(int id)
         {
+            if (LoginController.LoggedIn != LoginStatus.Success) return Unauthorized();
             var reservation = _reservationService.GetReservationById(id);
             if (reservation == null)
             {
                 return NotFound("Reservation not found.");
             }
 
-            _reservationService.DeleteReservation(reservation);
-
-            return Ok("Reservation deleted successfully.");
+            bool IsDeleted = _reservationService.DeleteReservation(reservation);
+            if(IsDeleted)
+            {
+                return Ok("Reservation deleted successfully.");
+            }
+            return BadRequest();
         }
     }
 }

@@ -22,10 +22,11 @@ namespace StarterKit.Services
 
                 if (existingCustomer != null)
                 {
-                    reservation.Customer = existingCustomer; 
+                    reservation.Customer = existingCustomer;
+                }
                 else
                 {
-                    _context.Customer.Add(reservation.Customer); 
+                    _context.Customer.Add(reservation.Customer);
                 }
             }
             else
@@ -44,7 +45,7 @@ namespace StarterKit.Services
                 }
                 else
                 {
-                    reservation.TheatreShowDate = showDate; 
+                    reservation.TheatreShowDate = showDate;
                 }
             }
             else
@@ -55,7 +56,6 @@ namespace StarterKit.Services
             // Add reservation to the context
             _context.Reservation.Add(reservation);
             _context.SaveChanges();
-            }
         }
 
 
@@ -86,26 +86,32 @@ namespace StarterKit.Services
         {
             var existingReservation = GetReservationById(reservation.ReservationId);
             if (existingReservation != null)
-            { 
+            {
                 existingReservation.Used = reservation.Used;
                 _context.Reservation.Update(existingReservation);
                 _context.SaveChanges();
             }
-            else 
+            else
             {
                 throw new ArgumentException("Reservation does not exist");
             }
         }
-    
-        public void DeleteReservation(Reservation reservation)
+
+        public bool DeleteReservation(Reservation reservation)
         {
-            _context.Reservation.Remove(reservation);
+            if(reservation != null)
+            {
+                _context.Reservation.Remove(reservation);
+                return true;
+            }
+            return false;
+
         }
 
         public List<Reservation> GetAllReservations()
         {
-            return _context.Reservation.ToList();	
-        }   
+            return _context.Reservation.ToList();
+        }
     }
 }
 
