@@ -6,8 +6,7 @@ namespace StarterKit.Models
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? Email { get; set; }
-        // You can choose to include a simplified view of Reservations if needed
-        public List<ReservationDisplayModel>? Reservations { get; set; }
+        // You can choose to include a simplified view of Reservations if neede
     }
 
     public class ReservationDisplayModel
@@ -16,6 +15,8 @@ namespace StarterKit.Models
         public int AmountOfTickets { get; set; }
         public bool Used { get; set; }
         // Optionally include the TheatreShowDate details
+
+        public CustomerDisplayModel Customer { get; set; }
         public TheatreShowDateDisplayModel? TheatreShowDate { get; set; }
     }
 
@@ -66,5 +67,16 @@ namespace StarterKit.Models
         public DateTime DateAndTime { get; set; } // Format can be handled at the display layer
         // Optionally include TheatreShow details
         public int TheatreShowId { get; set; } // Just reference ID
+    }
+
+    public class CustomerDisplayModelForField
+    {
+        public int CustomerId { get; set; }
+
+        public string? FirstName { get; set; }
+
+        public string? LastName { get; set; }
+
+        public string? Email { get; set; }
     }
 }

@@ -21,7 +21,7 @@ namespace StarterKit.Controllers
         [HttpGet]
         public IActionResult GetReservations([FromQuery] string? show, [FromQuery] DateTime? date)
         {
-            if (LoginController.LoggedIn != LoginStatus.Success) return Unauthorized();
+            if (LoginController.LoggedIn != LoginStatus.Success) return Unauthorized("No Admin logged in: therefore no access granted.");
 
             var reservations = _reservationService.GetAllReservations();
 
@@ -46,7 +46,7 @@ namespace StarterKit.Controllers
         [HttpGet("search")]
         public IActionResult SearchReservation([FromQuery] string? email, [FromQuery] string? reservationNumber)
         {
-            if (LoginController.LoggedIn != LoginStatus.Success) return Unauthorized();
+            if (LoginController.LoggedIn != LoginStatus.Success) return Unauthorized("No Admin logged in: therefore no access granted.");
             if (string.IsNullOrEmpty(email) && string.IsNullOrEmpty(reservationNumber))
             {
                 return BadRequest("You must provide either an email or a reservation number to search.");
@@ -80,7 +80,7 @@ namespace StarterKit.Controllers
         [HttpPatch("{id}/mark-used")]
         public IActionResult MarkReservationAsUsed(int id)
         {
-            if (LoginController.LoggedIn != LoginStatus.Success) return Unauthorized();
+            if (LoginController.LoggedIn != LoginStatus.Success) return Unauthorized("No Admin logged in: therefore no access granted.");
             var reservation = _reservationService.GetReservationById(id);
             if (reservation == null)
             {
@@ -101,7 +101,7 @@ namespace StarterKit.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteReservation(int id)
         {
-            if (LoginController.LoggedIn != LoginStatus.Success) return Unauthorized();
+            if (LoginController.LoggedIn != LoginStatus.Success) return Unauthorized("No Admin logged in: therefore no access granted.");
             var reservation = _reservationService.GetReservationById(id);
             if (reservation == null)
             {

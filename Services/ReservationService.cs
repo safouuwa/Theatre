@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using StarterKit.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,41 @@ namespace StarterKit.Services
         public ReservationService(DatabaseContext context)
         {
             _context = context;
+        }
+
+        public ReservationDisplayModel ConvertToDisplayModel(Reservation r)
+        {
+            return new ReservationDisplayModel
+            {
+                ReservationId = r.ReservationId,
+                AmountOfTickets = r.AmountOfTickets,
+                Used = r.Used,
+                Customer = new CustomerDisplayModel
+                {
+                    CustomerId = r.Customer.CustomerId,
+                    FirstName = r.Customer.FirstName,
+                    LastName = r.Customer.LastName,
+                    Email = r.Customer.Email,
+                },
+                TheatreShowDate = new TheatreShowDateDisplayModel
+                {
+                    TheatreShowDateId = r.TheatreShowDate.TheatreShowDateId,
+                    DateAndTime = r.TheatreShowDate.DateAndTime,
+                    TheatreShow = new TheatreShowDisplayModelForField
+                    {
+                        TheatreShowId = r.TheatreShowDate.TheatreShow.TheatreShowId,
+                        Title = r.TheatreShowDate.TheatreShow.Title,
+                        Description = r.TheatreShowDate.TheatreShow.Description,
+                        Price = r.TheatreShowDate.TheatreShow.Price,
+                        Venue = new VenueDisplayModel
+                        {
+                            VenueId = r.TheatreShowDate.TheatreShow.Venue?.VenueId ?? 0,
+                            Name = r.TheatreShowDate.TheatreShow.Venue?.Name,
+                            Capacity = r.TheatreShowDate.TheatreShow.Venue.Capacity
+                        }
+                    }
+                }
+            };
         }
 
         public void AddReservation(Reservation reservation)
@@ -102,15 +138,20 @@ namespace StarterKit.Services
             if(reservation != null)
             {
                 _context.Reservation.Remove(reservation);
+                _context.SaveChanges();
                 return true;
             }
             return false;
 
         }
 
-        public List<Reservation> GetAllReservations()
+        public List<ReservationDisplayModel> GetAllReservations()
         {
-            return _context.Reservation.ToList();
+            var all = _context.Reservation
+                .Include(x => x.Customer)
+                .Include(x => x.TheatreShowDate.TheatreShow.Venue)
+                .ToList();
+            return all.Select(x => ConvertToDisplayModel(x)).ToList();
         }
     }
 }

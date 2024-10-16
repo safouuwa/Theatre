@@ -14,7 +14,7 @@ namespace StarterKit.Services
         void UpdateReservation(Reservation reservation);
         bool DeleteReservation(Reservation reservation);
 
-        List<Reservation> GetAllReservations();
+        List<ReservationDisplayModel> GetAllReservations();
 
     }
 }
