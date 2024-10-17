@@ -1,0 +1,40 @@
+POST http://localhost:5097/api/v1/Login/Login
+Content-Type: application/json
+
+{
+  "username": "test@test.com",
+  "password": "password"
+}
+#####
+POST http://localhost:5097/api/v1/points/gift
+Content-Type: application/json
+
+{
+  "Email" : "", //check wrong email
+  "PointAmount" : 50
+}
+#####
+POST http://localhost:5097/api/v1/points/gift
+Content-Type: application/json
+
+{
+  "Email" : "cool@gmail.com",
+  "PointAmount" : 50
+}
+
+##### //now logging in with the second account and giving the points back
+POST http://localhost:5097/api/v1/Login/Login
+Content-Type: application/json
+
+{
+  "username": "cool@gmail.com",
+  "password": "pass1"
+}
+#####
+POST http://localhost:5097/api/v1/points/gift
+Content-Type: application/json
+
+{
+  "Email" : "test@test.com",
+  "PointAmount" : 50
+}
