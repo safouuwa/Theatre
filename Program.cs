@@ -28,6 +28,7 @@ namespace StarterKit
             builder.Services.AddScoped<ITheatreShowService, TheatreShowService>();
             builder.Services.AddScoped<IReservationService, ReservationService>();
             builder.Services.AddScoped<IPointService, PointService>();
+            builder.Services.AddScoped<IRewardService, RewardService>();
 
 
             builder.Services.AddDbContext<DatabaseContext>(
