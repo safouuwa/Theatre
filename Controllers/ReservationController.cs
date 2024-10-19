@@ -31,6 +31,8 @@ namespace StarterKit.Controllers
             bool isSpecialOccasion = false;
             RewardDetails rewardDetails = null;
 
+
+
             foreach (var request in reservationRequests)
             {
                 if (string.IsNullOrWhiteSpace(request.Email))
@@ -74,6 +76,7 @@ namespace StarterKit.Controllers
             foreach (var request in reservationRequests)
             {
                 var showDate = _theatreShowService.GetShowDateById(request.TheatreShowDateId);
+                float TimeBonus = _reservationService.CalculateTimeBonus(showDate.DateAndTime);
                 totalPrice += showDate.TheatreShow.Price * request.NumberOfTickets;
 
                 var customer = _reservationService.GetCustomerByEmail(request.Email);
@@ -83,10 +86,13 @@ namespace StarterKit.Controllers
                     {
                         FirstName = request.FirstName,
                         LastName = request.LastName,
-                        Email = request.Email
+                        Email = request.Email,
+                        Points = 0
                     };
                     _reservationService.AddCustomer(customer);
                 }
+                int totalPoints = (int)Math.Round(totalPrice * TimeBonus);
+                customer.Points += totalPoints;
 
 
 
@@ -108,8 +114,10 @@ namespace StarterKit.Controllers
                                 BonusPoints = rewardDetails.BonusPoints,
                                 Discounts = rewardDetails.Discounts,
                                 SpecialPerks = rewardDetails.SpecialPerks 
-                                });   
+                                });
             }
+
+            
 
             return Ok(new { TotalPrice = totalPrice });
         }

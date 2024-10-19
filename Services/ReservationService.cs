@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using StarterKit.Models;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace StarterKit.Services
 {
@@ -12,6 +13,36 @@ namespace StarterKit.Services
         public ReservationService(DatabaseContext context)
         {
             _context = context;
+        }
+
+        public float CalculateTimeBonus(DateTime ReservationTime)
+        {
+            TimeSpan currTime = ReservationTime.TimeOfDay;
+
+            TimeSpan morningStart  = new TimeSpan(9, 0, 0);
+            TimeSpan noonStart = new TimeSpan(12, 0, 0);
+            TimeSpan afternoonStart = new TimeSpan(14, 0, 0);
+            TimeSpan eveningStart = new TimeSpan(19, 0, 0);
+            TimeSpan midnight = new TimeSpan(0, 0, 0);
+            if (currTime >= morningStart && currTime < noonStart)
+            {
+                return 2.0f; // 9:00 AM - 12:00 PM -> 2x points
+            }
+            else if (currTime >= noonStart && currTime < afternoonStart)
+            {
+                return 1.5f; // 12:00 PM - 2:00 PM -> 1.5x points
+            }
+            else if (currTime >= afternoonStart && currTime < eveningStart)
+            {
+                return 1.0f; // 2:00 PM - 7:00 PM -> 1x points
+            }
+            else if (currTime >= eveningStart || currTime < midnight)
+            {
+                return 1.25f; // 7:00 PM - 12:00 AM -> 1.25x points
+            }
+
+            // Default multiplier (if time doesn't fit into defined ranges)
+            return 1.0f;
         }
 
         public ReservationDisplayModel ConvertToDisplayModel(Reservation r)
