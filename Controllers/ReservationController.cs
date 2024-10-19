@@ -31,20 +31,19 @@ namespace StarterKit.Controllers
             bool isSpecialOccasion = false;
             RewardDetails rewardDetails = null;
 
-
-
             foreach (var request in reservationRequests)
             {
                 if (string.IsNullOrWhiteSpace(request.Email))
                 {
                     return BadRequest("Email cannot be null or empty.\nAll reservation requests have been canceled. Please make sure all orders are correct to confirm your reservation(s)");
                 }
-                var showDate = _theatreShowService.GetShowDateById(request.TheatreShowDateId);
 
+                var showDate = _theatreShowService.GetShowDateById(request.TheatreShowDateId);
                 if (showDate == null)
                 {
                     return NotFound($"Show date with ID {request.TheatreShowDateId} not found.\nAll reservation requests have been canceled. Please make sure all orders are correct to confirm your reservation(s)");
                 }
+
                 if (showDate.TheatreShow == null)
                 {
                     return BadRequest("Theatre show information is missing.\nAll reservation requests have been canceled. Please make sure all orders are correct to confirm your reservation(s)");
@@ -60,12 +59,13 @@ namespace StarterKit.Controllers
                 {
                     return BadRequest("Venue information is missing.\nAll reservation requests have been canceled. Please make sure all orders are correct to confirm your reservation(s)");
                 }
-                int reservedTickets = showDate.Reservations?.Sum(r => r.AmountOfTickets) ?? 0;
 
+                int reservedTickets = showDate.Reservations?.Sum(r => r.AmountOfTickets) ?? 0;
                 if (reservedTickets + request.NumberOfTickets > venue.Capacity)
                 {
                     return BadRequest($"Not enough tickets available for show date ID {request.TheatreShowDateId}. Requested: {request.NumberOfTickets}, Available: {venue.Capacity - reservedTickets}\nAll reservation requests have been canceled. Please make sure all orders are correct to confirm your reservation(s)");
                 }
+
                 if (_rewardService.IsSpecialOccasion(showDate.DateAndTime))
                 {
                     isSpecialOccasion = true;
@@ -76,7 +76,7 @@ namespace StarterKit.Controllers
             foreach (var request in reservationRequests)
             {
                 var showDate = _theatreShowService.GetShowDateById(request.TheatreShowDateId);
-                float TimeBonus = _reservationService.CalculateTimeBonus(showDate.DateAndTime);
+                float timeBonus = _reservationService.CalculateTimeBonus(showDate.DateAndTime);
                 totalPrice += showDate.TheatreShow.Price * request.NumberOfTickets;
 
                 var customer = _reservationService.GetCustomerByEmail(request.Email);
@@ -91,10 +91,18 @@ namespace StarterKit.Controllers
                     };
                     _reservationService.AddCustomer(customer);
                 }
-                int totalPoints = (int)Math.Round(totalPrice * TimeBonus);
+
+                int reservationsThisYear = _reservationService.GetReservations()
+                    .Count(r => r.Customer.Email == customer.Email && r.TheatreShowDate.DateAndTime.Year == DateTime.Now.Year);
+                customer.UpdateTier(reservationsThisYear);
+
+                if (!int.TryParse(customer.Tier, out int tier))
+                {
+                    return BadRequest("Invalid customer tier value.\nAll reservation requests have been canceled. Please make sure all orders are correct to confirm your reservation(s)");
+                }
+                float tierMultiplier = _reservationService.CalculateTierMultiplier(tier);
+                int totalPoints = (int)Math.Round(totalPrice * timeBonus * tierMultiplier);
                 customer.Points += totalPoints;
-
-
 
                 var reservation = new Reservation
                 {
@@ -103,21 +111,20 @@ namespace StarterKit.Controllers
                     Customer = customer,
                     TheatreShowDate = showDate
                 };
-
                 _reservationService.AddReservation(reservation);
             }
 
             if (isSpecialOccasion && rewardDetails != null)
             {
-                return Ok(new { TotalPrice = totalPrice,
-                                SpecialOccasion = true,
-                                BonusPoints = rewardDetails.BonusPoints,
-                                Discounts = rewardDetails.Discounts,
-                                SpecialPerks = rewardDetails.SpecialPerks 
-                                });
+                return Ok(new
+                {
+                    TotalPrice = totalPrice,
+                    SpecialOccasion = true,
+                    BonusPoints = rewardDetails.BonusPoints,
+                    Discounts = rewardDetails.Discounts,
+                    SpecialPerks = rewardDetails.SpecialPerks
+                });
             }
-
-            
 
             return Ok(new { TotalPrice = totalPrice });
         }

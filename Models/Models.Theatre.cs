@@ -11,8 +11,29 @@ namespace StarterKit.Models
         public string? Email { get; set; }
         public string Password { get; set; }
         public int Points { get; set; }
+        public string Tier { get; set; } = "Standard";
 
         public List<Reservation>? Reservations { get; set; }
+
+        public void UpdateTier(int reservationsThisYear)
+        {
+            if (reservationsThisYear >= 20)
+            {
+                Tier = "Gold";
+            }
+            else if (reservationsThisYear >= 10)
+            {
+                Tier = "Silver";
+            }
+            else if (reservationsThisYear >= 5)
+            {
+                Tier = "Bronze";
+            }
+            else
+            {
+                Tier = "Standard"; // Default tier
+            }
+        }
     }
 
 

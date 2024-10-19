@@ -15,6 +15,35 @@ namespace StarterKit.Services
             _context = context;
         }
 
+        public float CalculateTierMultiplier(int tier)
+
+        {
+
+            switch (tier)
+
+            {
+
+                case 1:
+
+                    return 1.0f;
+
+                case 2:
+
+                    return 1.1f;
+
+                case 3:
+
+                    return 1.2f;
+
+                default:
+
+                    return 1.0f;
+
+            }
+
+        }
+
+
         public float CalculateTimeBonus(DateTime ReservationTime)
         {
             TimeSpan currTime = ReservationTime.TimeOfDay;
