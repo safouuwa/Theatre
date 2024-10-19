@@ -10,11 +10,13 @@ namespace StarterKit.Controllers
     {
         private readonly IReservationService _reservationService;
         private readonly ITheatreShowService _theatreShowService;
+        private readonly IRewardService _rewardService;
 
-        public ReservationController(IReservationService reservationService, ITheatreShowService theatreShowService)
+        public ReservationController(IReservationService reservationService, ITheatreShowService theatreShowService, IRewardService rewardService)
         {
             _reservationService = reservationService;
             _theatreShowService = theatreShowService;
+            _rewardService = rewardService;
         }
 
         [HttpPost]
@@ -26,6 +28,8 @@ namespace StarterKit.Controllers
             }
 
             double totalPrice = 0;
+            bool isSpecialOccasion = false;
+            RewardDetails rewardDetails = null;
 
             foreach (var request in reservationRequests)
             {
@@ -60,6 +64,11 @@ namespace StarterKit.Controllers
                 {
                     return BadRequest($"Not enough tickets available for show date ID {request.TheatreShowDateId}. Requested: {request.NumberOfTickets}, Available: {venue.Capacity - reservedTickets}\nAll reservation requests have been canceled. Please make sure all orders are correct to confirm your reservation(s)");
                 }
+                if (_rewardService.IsSpecialOccasion(showDate.DateAndTime))
+                {
+                    isSpecialOccasion = true;
+                    rewardDetails = _rewardService.ApplySpecialOccasionRewards(request.Email, showDate.DateAndTime);
+                }
             }
 
             foreach (var request in reservationRequests)
@@ -90,6 +99,16 @@ namespace StarterKit.Controllers
                 };
 
                 _reservationService.AddReservation(reservation);
+            }
+
+            if (isSpecialOccasion && rewardDetails != null)
+            {
+                return Ok(new { TotalPrice = totalPrice,
+                                SpecialOccasion = true,
+                                BonusPoints = rewardDetails.BonusPoints,
+                                Discounts = rewardDetails.Discounts,
+                                SpecialPerks = rewardDetails.SpecialPerks 
+                                });   
             }
 
             return Ok(new { TotalPrice = totalPrice });
