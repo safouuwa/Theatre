@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using StarterKit.Models;
 using StarterKit.Services;
+using StarterKit.Filters;
 
 namespace StarterKit
 {
@@ -28,6 +29,7 @@ namespace StarterKit
             builder.Services.AddScoped<ITheatreShowService, TheatreShowService>();
             builder.Services.AddScoped<IReservationService, ReservationService>();
             builder.Services.AddScoped<IPointService, PointService>();
+            builder.Services.AddScoped<IRewardService, RewardService>();
 
 
             builder.Services.AddDbContext<DatabaseContext>(
@@ -55,6 +57,21 @@ namespace StarterKit
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
+            app.Use(async (context, next) =>
+            {
+                var currentTime = DateTime.Now.TimeOfDay;
+                var startTime = new TimeSpan(0, 0, 0);  // 00:00
+                var endTime = new TimeSpan(9, 0, 0);    // 09:00
+                var endpoint = context.GetEndpoint();
+                if (currentTime >= startTime && currentTime <= endTime && endpoint.Metadata.OfType<UserOnly>().Any())
+                {
+                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                    await context.Response.WriteAsync("The cinema is unfortunately closed at this moment. Please try again at 09:00 in the morning.");
+                    return;
+                }
+                await next.Invoke();
+            });
 
             app.Run();
 

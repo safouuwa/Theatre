@@ -10,11 +10,13 @@ namespace StarterKit.Controllers
     {
         private readonly IReservationService _reservationService;
         private readonly ITheatreShowService _theatreShowService;
+        private readonly IRewardService _rewardService;
 
-        public ReservationController(IReservationService reservationService, ITheatreShowService theatreShowService)
+        public ReservationController(IReservationService reservationService, ITheatreShowService theatreShowService, IRewardService rewardService)
         {
             _reservationService = reservationService;
             _theatreShowService = theatreShowService;
+            _rewardService = rewardService;
         }
 
         [HttpPost]
@@ -26,6 +28,8 @@ namespace StarterKit.Controllers
             }
 
             double totalPrice = 0;
+            bool isSpecialOccasion = false;
+            RewardDetails rewardDetails = null;
 
             foreach (var request in reservationRequests)
             {
@@ -33,12 +37,13 @@ namespace StarterKit.Controllers
                 {
                     return BadRequest("Email cannot be null or empty.\nAll reservation requests have been canceled. Please make sure all orders are correct to confirm your reservation(s)");
                 }
-                var showDate = _theatreShowService.GetShowDateById(request.TheatreShowDateId);
 
+                var showDate = _theatreShowService.GetShowDateById(request.TheatreShowDateId);
                 if (showDate == null)
                 {
                     return NotFound($"Show date with ID {request.TheatreShowDateId} not found.\nAll reservation requests have been canceled. Please make sure all orders are correct to confirm your reservation(s)");
                 }
+
                 if (showDate.TheatreShow == null)
                 {
                     return BadRequest("Theatre show information is missing.\nAll reservation requests have been canceled. Please make sure all orders are correct to confirm your reservation(s)");
@@ -54,17 +59,24 @@ namespace StarterKit.Controllers
                 {
                     return BadRequest("Venue information is missing.\nAll reservation requests have been canceled. Please make sure all orders are correct to confirm your reservation(s)");
                 }
-                int reservedTickets = showDate.Reservations?.Sum(r => r.AmountOfTickets) ?? 0;
 
+                int reservedTickets = showDate.Reservations?.Sum(r => r.AmountOfTickets) ?? 0;
                 if (reservedTickets + request.NumberOfTickets > venue.Capacity)
                 {
                     return BadRequest($"Not enough tickets available for show date ID {request.TheatreShowDateId}. Requested: {request.NumberOfTickets}, Available: {venue.Capacity - reservedTickets}\nAll reservation requests have been canceled. Please make sure all orders are correct to confirm your reservation(s)");
+                }
+
+                if (_rewardService.IsSpecialOccasion(showDate.DateAndTime))
+                {
+                    isSpecialOccasion = true;
+                    rewardDetails = _rewardService.ApplySpecialOccasionRewards(request.Email, showDate.DateAndTime);
                 }
             }
 
             foreach (var request in reservationRequests)
             {
                 var showDate = _theatreShowService.GetShowDateById(request.TheatreShowDateId);
+                float timeBonus = _reservationService.CalculateTimeBonus(showDate.DateAndTime);
                 totalPrice += showDate.TheatreShow.Price * request.NumberOfTickets;
 
                 var customer = _reservationService.GetCustomerByEmail(request.Email);
@@ -74,12 +86,19 @@ namespace StarterKit.Controllers
                     {
                         FirstName = request.FirstName,
                         LastName = request.LastName,
-                        Email = request.Email
+                        Email = request.Email,
+                        Points = 0,
+                        Tier = "Standard"
                     };
                     _reservationService.AddCustomer(customer);
                 }
 
-
+                int reservationsThisYear = _reservationService.GetReservations()
+                    .Count(r => r.Customer.Email == customer.Email && r.TheatreShowDate.DateAndTime.Year == DateTime.Now.Year);
+                customer.UpdateTier(reservationsThisYear);
+                float tierMultiplier = _reservationService.CalculateTierMultiplier(customer.Tier == "Bronze" ? 1 : customer.Tier == "Silver" ? 2 : customer.Tier == "Gold" ? 3 : 0);
+                int totalPoints = (int)Math.Round(totalPrice * timeBonus * tierMultiplier);
+                customer.Points += totalPoints;
 
                 var reservation = new Reservation
                 {
@@ -88,8 +107,19 @@ namespace StarterKit.Controllers
                     Customer = customer,
                     TheatreShowDate = showDate
                 };
-
                 _reservationService.AddReservation(reservation);
+            }
+
+            if (isSpecialOccasion && rewardDetails != null)
+            {
+                return Ok(new
+                {
+                    TotalPrice = totalPrice,
+                    SpecialOccasion = true,
+                    BonusPoints = rewardDetails.BonusPoints,
+                    Discounts = rewardDetails.Discounts,
+                    SpecialPerks = rewardDetails.SpecialPerks
+                });
             }
 
             return Ok(new { TotalPrice = totalPrice });

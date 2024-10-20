@@ -5,6 +5,7 @@ namespace StarterKit.Services
 {
     public interface IReservationService
     {
+        public float CalculateTimeBonus(DateTime ReservationTime);
         void AddReservation(Reservation reservation);
         IEnumerable<Reservation> GetReservations();
         Reservation GetReservationById(int reservationId);
@@ -16,5 +17,6 @@ namespace StarterKit.Services
 
         List<ReservationDisplayModel> GetAllReservations();
 
+        float CalculateTierMultiplier(int tier);
     }
 }
