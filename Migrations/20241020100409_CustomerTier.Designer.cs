@@ -11,8 +11,8 @@ using StarterKit.Models;
 namespace StarterKit.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20241019181705_AddCustomerTier")]
-    partial class AddCustomerTier
+    [Migration("20241020100409_CustomerTier")]
+    partial class CustomerTier
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -104,6 +104,10 @@ namespace StarterKit.Migrations
 
                     b.Property<int>("Points")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Tier")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.HasKey("CustomerId");
 

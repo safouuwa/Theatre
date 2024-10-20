@@ -25,15 +25,15 @@ namespace StarterKit.Services
 
                 case 1:
 
-                    return 1.0f;
+                    return 1.1f;
 
                 case 2:
 
-                    return 1.1f;
+                    return 1.2f;
 
                 case 3:
 
-                    return 1.2f;
+                    return 1.3f;
 
                 default:
 
@@ -159,6 +159,8 @@ namespace StarterKit.Services
         public IEnumerable<Reservation> GetReservations()
         {
             return _context.Reservation
+                .Include(x => x.Customer)
+                .Include(x => x.TheatreShowDate)
                 .ToList();
         }
 

@@ -87,7 +87,8 @@ namespace StarterKit.Controllers
                         FirstName = request.FirstName,
                         LastName = request.LastName,
                         Email = request.Email,
-                        Points = 0
+                        Points = 0,
+                        Tier = "Standard"
                     };
                     _reservationService.AddCustomer(customer);
                 }
@@ -95,12 +96,7 @@ namespace StarterKit.Controllers
                 int reservationsThisYear = _reservationService.GetReservations()
                     .Count(r => r.Customer.Email == customer.Email && r.TheatreShowDate.DateAndTime.Year == DateTime.Now.Year);
                 customer.UpdateTier(reservationsThisYear);
-
-                if (!int.TryParse(customer.Tier, out int tier))
-                {
-                    return BadRequest("Invalid customer tier value.\nAll reservation requests have been canceled. Please make sure all orders are correct to confirm your reservation(s)");
-                }
-                float tierMultiplier = _reservationService.CalculateTierMultiplier(tier);
+                float tierMultiplier = _reservationService.CalculateTierMultiplier(customer.Tier == "Bronze" ? 1 : customer.Tier == "Silver" ? 2 : customer.Tier == "Gold" ? 3 : 0);
                 int totalPoints = (int)Math.Round(totalPrice * timeBonus * tierMultiplier);
                 customer.Points += totalPoints;
 
