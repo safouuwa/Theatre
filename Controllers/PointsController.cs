@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using StarterKit.Models;
+using StarterKit.Filters;
 using StarterKit.Services;
 
 namespace StarterKit.Controllers
@@ -13,10 +14,10 @@ namespace StarterKit.Controllers
         {
             service = _service;
         }
+        [UserOnly]
         [HttpPost("gift")]
         public IActionResult Post([FromBody] GiftBody gift)
         {
-            if (customer is null) return Unauthorized("Not logged in...");
             customer = service.RefreshCustomer(customer.Email, customer.Password);
             if (gift == null) return BadRequest("");
             if (customer.Email == gift.Email) return BadRequest("Cannot gift points to your own account.");

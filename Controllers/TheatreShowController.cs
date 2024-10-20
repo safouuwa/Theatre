@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using StarterKit.Services;
 using StarterKit.Models;
+using StarterKit.Filters;
 
     namespace StarterKit.Controllers;
 
@@ -25,7 +26,7 @@ public class TheatreShowController : Controller
         }
         return Ok(show);
     }
-
+    [AdminOnly]
     [HttpPost()]
     public IActionResult PostTheatreShow([FromBody]TheatreShow theatreShow)
     {
@@ -33,7 +34,7 @@ public class TheatreShowController : Controller
         if (show is null) return Unauthorized("Admin is not logged in; no access to this feature");
         return Ok($" {show.Title} added to the database!");
     }
-
+    [AdminOnly]
     [HttpPut("Update")]
     public IActionResult UpdateTheatreShow([FromBody] TheatreShow theatreShow)
     {
@@ -42,7 +43,7 @@ public class TheatreShowController : Controller
         if (show is 2) return Unauthorized("Given data does not exist in database; nothing to update");
         return Ok($" {theatreShow.Title} updated in the database!");
     }
-
+    [AdminOnly]
     [HttpDelete("{showid}")]
     public IActionResult DeleteTheatreShow([FromRoute] int showid)
     {
