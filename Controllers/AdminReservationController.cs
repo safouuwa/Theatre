@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StarterKit.Services;
+using StarterKit.Filters;
 
 
 namespace StarterKit.Controllers
@@ -17,12 +18,10 @@ namespace StarterKit.Controllers
             _reservationService = reservationService;
             _theatreShowService = theatreShowService;
         }
-
+        [AdminOnly]
         [HttpGet]
         public IActionResult GetReservations([FromQuery] string? show, [FromQuery] DateTime? date)
         {
-            if (LoginController.LoggedIn != LoginStatus.Success) return Unauthorized("No Admin logged in: therefore no access granted.");
-
             var reservations = _reservationService.GetAllReservations();
 
             if (!string.IsNullOrEmpty(show))
@@ -42,11 +41,10 @@ namespace StarterKit.Controllers
 
             return Ok(reservations);
         }
-
+        [AdminOnly]
         [HttpGet("search")]
         public IActionResult SearchReservation([FromQuery] string? email, [FromQuery] string? reservationNumber)
         {
-            if (LoginController.LoggedIn != LoginStatus.Success) return Unauthorized("No Admin logged in: therefore no access granted.");
             if (string.IsNullOrEmpty(email) && string.IsNullOrEmpty(reservationNumber))
             {
                 return BadRequest("You must provide either an email or a reservation number to search.");
@@ -76,11 +74,10 @@ namespace StarterKit.Controllers
 
             return Ok(reservations);
         }
-
+        [AdminOnly]
         [HttpPatch("{id}/mark-used")]
         public IActionResult MarkReservationAsUsed(int id)
         {
-            if (LoginController.LoggedIn != LoginStatus.Success) return Unauthorized("No Admin logged in: therefore no access granted.");
             var reservation = _reservationService.GetReservationById(id);
             if (reservation == null)
             {
@@ -98,10 +95,10 @@ namespace StarterKit.Controllers
             return Ok("Reservation marked as used.");
         }
 
+        [AdminOnly]
         [HttpDelete("{id}")]
         public IActionResult DeleteReservation(int id)
         {
-            if (LoginController.LoggedIn != LoginStatus.Success) return Unauthorized("No Admin logged in: therefore no access granted.");
             var reservation = _reservationService.GetReservationById(id);
             if (reservation == null)
             {

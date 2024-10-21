@@ -1,6 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using StarterKit.Models;
 using StarterKit.Services;
+using StarterKit.Filters;
+using Microsoft.Extensions.Options;
+using System.Globalization;
 
 namespace StarterKit
 {
@@ -15,7 +19,7 @@ namespace StarterKit
 
             builder.Services.AddDistributedMemoryCache();
 
-            
+            builder.Services.Configure<TheatreHours>(builder.Configuration.GetSection("TheatreSettings"));            
 
             builder.Services.AddSession(options => 
             {
@@ -27,6 +31,8 @@ namespace StarterKit
             builder.Services.AddScoped<ILoginService, LoginService>();
             builder.Services.AddScoped<ITheatreShowService, TheatreShowService>();
             builder.Services.AddScoped<IReservationService, ReservationService>();
+            builder.Services.AddScoped<IPointService, PointService>();
+            builder.Services.AddScoped<IRewardService, RewardService>();
 
 
             builder.Services.AddDbContext<DatabaseContext>(
@@ -55,8 +61,31 @@ namespace StarterKit
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
+            app.Use(async (context, next) =>
+            {
+                var _theatreHours = context.RequestServices.GetRequiredService<IOptions<TheatreHours>>().Value;
+                var currentTime = DateTime.Now.TimeOfDay;
+                var startTime = DateTime.ParseExact(_theatreHours.OpeningTime, "HH:mm", CultureInfo.InvariantCulture).TimeOfDay;
+                var endTime = DateTime.ParseExact(_theatreHours.ClosingTime, "HH:mm", CultureInfo.InvariantCulture).TimeOfDay;
+                var endpoint = context.GetEndpoint();
+                bool isCrossingMidnight = endTime < startTime;
+                if (currentTime <= startTime && currentTime <= endTime)
+                {
+                    context.Response.StatusCode = 503;
+                    await context.Response.WriteAsync("The cinema is unfortunately closed at this moment. Please try again at 09:00 in the morning.");
+                    return;
+                }
+                await next.Invoke();
+            });
+
             app.Run();
 
         }
     }
 }
+//class for options
+public class TheatreHours
+    {
+        public string OpeningTime { get; set; }
+        public string ClosingTime { get; set; }
+    }

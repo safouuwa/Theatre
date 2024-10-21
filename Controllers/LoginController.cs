@@ -11,6 +11,7 @@ public class LoginController : Controller
 {
     private readonly ILoginService _loginService;
     public static LoginStatus LoggedIn;
+    public static Customer CurrentLoggedIn = null;
     
 
     public LoginController(ILoginService loginService)
@@ -23,9 +24,15 @@ public class LoginController : Controller
     {
         // TODO: Impelement login method
         LoginStatus status = _loginService.CheckPassword(loginBody.Username, loginBody.Password);
-        if (status is LoginStatus.Success)
+        if (status is LoginStatus.AdminSuccess)
         {
-            LoggedIn = LoginStatus.Success;
+            LoggedIn = LoginStatus.AdminSuccess;
+            return Ok("Logged in as Admin");
+        }
+        if (status is LoginStatus.UserSuccess)
+        {
+            LoggedIn = LoginStatus.UserSuccess;
+            CurrentLoggedIn = _loginService.GetCustomerAccount(loginBody.Username, loginBody.Password);
             return Ok("Logged in!");
         }
         if (status is LoginStatus.IncorrectUsername) return Unauthorized("Incorrect username");
@@ -36,7 +43,7 @@ public class LoginController : Controller
     public IActionResult IsAdminLoggedIn()
     {
         // TODO: This method should return a status 200 OK when logged in, else 403, unauthorized
-        if (LoggedIn == LoginStatus.Success) return Ok("You are logged in!");
+        if (LoggedIn == LoginStatus.AdminSuccess) return Ok("You are logged in!");
         return Unauthorized("You are not logged in");
     }
 
@@ -44,6 +51,7 @@ public class LoginController : Controller
     public IActionResult Logout()
     {
         LoggedIn = LoginStatus.LoggedOut;
+        CurrentLoggedIn = null;
         return Ok("Logged out");
     }
 

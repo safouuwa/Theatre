@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using StarterKit.Services;
 using StarterKit.Models;
+using StarterKit.Filters;
 
     namespace StarterKit.Controllers;
 
@@ -25,30 +26,29 @@ public class TheatreShowController : Controller
         }
         return Ok(show);
     }
-
+    [AdminOnly]
     [HttpPost()]
     public IActionResult PostTheatreShow([FromBody]TheatreShow theatreShow)
     {
+        if (theatreShow == null) return BadRequest("Data in body not sufficient or correct for a Theatre Show");
         TheatreShowDisplayModel show = _theatreShowService.PostTheatreShow(theatreShow);
-        if (show is null) return Unauthorized("Admin is not logged in; no access to this feature");
+        if (show is null) return BadRequest("Show with given id already exists");
         return Ok($" {show.Title} added to the database!");
     }
-
+    [AdminOnly]
     [HttpPut("Update")]
     public IActionResult UpdateTheatreShow([FromBody] TheatreShow theatreShow)
     {
+        if (theatreShow == null) return BadRequest("Data in body not sufficient or correct for a Theatre Show");
         int show = _theatreShowService.UpdateTheatreShow(theatreShow);
-        if (show is 1) return Unauthorized("Admin is not logged in; no access to this feature");
         if (show is 2) return Unauthorized("Given data does not exist in database; nothing to update");
         return Ok($" {theatreShow.Title} updated in the database!");
     }
-
+    [AdminOnly]
     [HttpDelete("{showid}")]
     public IActionResult DeleteTheatreShow([FromRoute] int showid)
     {
-        Console.WriteLine(showid);
         KeyValuePair<TheatreShow,int> show = _theatreShowService.DeleteTheatreShow(showid);
-        if (show.Value is 1) return Unauthorized("Admin is not logged in; no access to this feature");
         if (show.Value is 2) return Unauthorized("Given data does not exist in database; nothing to delete");
         return Ok($" {show.Key.Title} deleted from the database!");
     }

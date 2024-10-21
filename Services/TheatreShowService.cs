@@ -23,12 +23,6 @@ public class TheatreShowService : ControllerBase, ITheatreShowService
     private static TheatreShowDisplayModel ConvertToTheatreShowDisplayModel(TheatreShow show)
     {
         if (show is null) return null;
-        Console.WriteLine($"{show.TheatreShowId}");
-        Console.WriteLine($"{show.Title}");
-        Console.WriteLine($"{show.Description}");
-        Console.WriteLine($"{show.Price}");
-        Console.WriteLine($"{show.Venue}");
-        Console.WriteLine($"{show.theatreShowDates}");
         return new TheatreShowDisplayModel
         {
             TheatreShowId = show.TheatreShowId,
@@ -96,6 +90,7 @@ public TheatreShowDisplayModel RetrieveById(int id)
 
     public TheatreShowDisplayModel PostTheatreShow(TheatreShow theatreShow)
     {
+        if (_context.TheatreShow.Any(x => x.TheatreShowId == theatreShow.TheatreShowId)) return null;
         var existingVenue = _context.Venue.FirstOrDefault(v => v.VenueId == theatreShow.Venue.VenueId);
         if (existingVenue == null)
         {
@@ -118,17 +113,16 @@ public TheatreShowDisplayModel RetrieveById(int id)
     
     public int UpdateTheatreShow(TheatreShow theatreShow)
     {
-        if (LoginController.LoggedIn != LoginStatus.Success) return 1;
         if (!_context.TheatreShow.Any(x => x.TheatreShowId == theatreShow.TheatreShowId)) return 2;
         _context.TheatreShow.Remove(_context.TheatreShow.FirstOrDefault(x => x.TheatreShowId == theatreShow.TheatreShowId));
         foreach (TheatreShowDate t in _context.TheatreShowDate.Where(x => x.TheatreShow.TheatreShowId == theatreShow.TheatreShowId)) _context.TheatreShowDate.Remove(t);
+        _context.SaveChanges();
         PostTheatreShow(theatreShow);
         return 0;
     }
     
      public KeyValuePair<TheatreShow,int> DeleteTheatreShow(int showid)
     {
-        if (LoginController.LoggedIn != LoginStatus.Success) return new KeyValuePair<TheatreShow, int>(null, 1);
         if (!_context.TheatreShow.Any(x => x.TheatreShowId == showid)) return new KeyValuePair<TheatreShow, int>(null, 2);
         foreach (TheatreShowDate t in _context.TheatreShowDate.Where(x => x.TheatreShow.TheatreShowId == showid)) _context.TheatreShowDate.Remove(t);
         TheatreShow show = _context.TheatreShow.FirstOrDefault(x => x.TheatreShowId == showid);
