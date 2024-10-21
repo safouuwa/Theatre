@@ -5,5 +5,6 @@ namespace StarterKit.Services
     {
         public bool GiftPoints(string fromEmail, string toEmail, int email);
         public Customer RefreshCustomer(string email, string password);
+        public bool BuyDiscount(Customer customer);
     }
 }

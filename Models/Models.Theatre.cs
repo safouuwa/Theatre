@@ -12,6 +12,7 @@ namespace StarterKit.Models
         public string? Password { get; set; } = "password";
         public int Points { get; set; }
         public string Tier { get; set; } = "Standard";
+        public bool Discount { get; set; } = false;
 
         public List<Reservation>? Reservations { get; set; }
 

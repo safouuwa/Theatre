@@ -204,7 +204,7 @@ POST http://localhost:5097/api/v1/Login/Login
 Content-Type: application/json
 
 {
-  "username": "test@test.com",
+  "username": "test@gmail.com",
   "password": "password"
 }
 #####
@@ -240,3 +240,21 @@ Content-Type: application/json
   "Email" : "test@test.com",
   "PointAmount" : 50
 }
+#####
+// getting discount on your account; need to be logged in as a user
+GET http://localhost:5097/api/v1/points/shop
+#####
+// getting discount on your account; need to be logged in as a user
+GET http://localhost:5097/api/v1/points/shop/discount
+#####
+// using discount on your account; need to be logged in as a user; reservation as a logged in customer
+POST http://localhost:5097/api/v1/Reservation/account
+Content-Type: application/json
+
+[
+  {
+    "TheatreShowDateId" : 1,
+    "NumberOfTickets" : 1
+  }
+]
+

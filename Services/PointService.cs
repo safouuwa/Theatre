@@ -22,5 +22,15 @@ namespace StarterKit.Services
             return true;
         }
         public Customer RefreshCustomer(string email, string password) => context.Customer.First(x => x.Email == email && x.Password == password);
+
+        public bool BuyDiscount(Customer customer)
+        {
+            if (customer is null) return false;
+            if (customer.Points < 200) return false;
+            customer.Points -= 200;
+            customer.Discount = true;
+            context.SaveChanges();
+            return true;
+        }
     }
 }

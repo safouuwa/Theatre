@@ -18,5 +18,6 @@ namespace StarterKit.Services
         List<ReservationDisplayModel> GetAllReservations();
 
         float CalculateTierMultiplier(int tier);
+        public void HandleDiscount(Customer customer);
     }
 }

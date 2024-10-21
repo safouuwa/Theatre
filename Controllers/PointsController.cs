@@ -27,6 +27,25 @@ namespace StarterKit.Controllers
             return Ok($"{gift.PointAmount} points gifted to {gift.Email}!\n Your Points: {customer.Points}");
         }
 
+        [UserOnly]
+        [HttpGet("shop")]
+        public IActionResult GetShopInfo()
+        {
+            customer = service.RefreshCustomer(customer.Email, customer.Password);
+            return Ok($"Your Points: {customer.Points}\nAvailable Items:\n50% Discount off your next order: 200 Points\nUse shop/discount to purchase!"); //more rewards added in the future
+        }
+
+        [UserOnly]
+        [HttpGet("shop/discount")]
+        public IActionResult GetDiscount()
+        {
+            customer = service.RefreshCustomer(customer.Email, customer.Password);
+            var prepoints = customer.Points;
+            bool check = service.BuyDiscount(customer);
+            if (check is false) return BadRequest("Purchase failed; Insufficient amount of Points");
+            return Ok($"50% Discount Bought!\nYour Points: {prepoints} -> {customer.Points}\nDiscount will be applied at checkout of your next reservation!");
+        }
+
     }
 
     public class GiftBody

@@ -238,6 +238,13 @@ namespace StarterKit.Services
                 .ToList();
             return all.Select(x => ConvertToDisplayModel(x)).ToList();
         }
+
+        public void HandleDiscount(Customer customer)
+        {
+            customer.Discount = false;
+            _context.SaveChanges();
+            return;
+        }
     }
 }
 

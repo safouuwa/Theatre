@@ -226,7 +226,11 @@ namespace StarterKit.Controllers
                     PointsReceived = points, 
                 });
             }
-
+            if (customer.Discount)
+            {
+                _reservationService.HandleDiscount(customer);
+                return Ok(new { TotalPrice = totalPrice / 2, PointsReceived = points, Discount = "50%"});
+            }
             return Ok(new { TotalPrice = totalPrice, PointsReceived = points});
         }
     }
