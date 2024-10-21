@@ -43,6 +43,29 @@ namespace StarterKit.Services
 
         }
 
+        public void UpgradeAccountTier(int customerId, int newTier)
+        {
+            var customer = _context.Customer.FirstOrDefault(c => c.CustomerId == customerId);
+            if (customer == null)
+            {
+                throw new ArgumentException("Customer not found.");
+            }
+
+            if (!IsValidTier(newTier))
+            {
+                throw new ArgumentException("Invalid tier.");
+            }
+
+            customer.Tier = newTier.ToString();
+            _context.SaveChanges();
+        }
+
+        private bool IsValidTier(int tier)
+        {
+            // Assuming valid tiers are between 1 and 5
+            return tier >= 1 && tier <= 5;
+        }
+
 
         public float CalculateTimeBonus(DateTime ReservationTime)
         {

@@ -1,7 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using StarterKit.Models;
 using StarterKit.Services;
 using StarterKit.Filters;
+using Microsoft.Extensions.Options;
+using System.Globalization;
 
 namespace StarterKit
 {
@@ -16,7 +19,7 @@ namespace StarterKit
 
             builder.Services.AddDistributedMemoryCache();
 
-            
+            builder.Services.Configure<TheatreHours>(builder.Configuration.GetSection("TheatreSettings"));            
 
             builder.Services.AddSession(options => 
             {
@@ -60,13 +63,15 @@ namespace StarterKit
 
             app.Use(async (context, next) =>
             {
+                var _theatreHours = context.RequestServices.GetRequiredService<IOptions<TheatreHours>>().Value;
                 var currentTime = DateTime.Now.TimeOfDay;
-                var startTime = new TimeSpan(0, 0, 0);  // 00:00
-                var endTime = new TimeSpan(9, 0, 0);    // 09:00
+                var startTime = DateTime.ParseExact(_theatreHours.OpeningTime, "HH:mm", CultureInfo.InvariantCulture).TimeOfDay;
+                var endTime = DateTime.ParseExact(_theatreHours.ClosingTime, "HH:mm", CultureInfo.InvariantCulture).TimeOfDay;
                 var endpoint = context.GetEndpoint();
-                if (currentTime >= startTime && currentTime <= endTime && endpoint.Metadata.OfType<UserOnly>().Any())
+                bool isCrossingMidnight = endTime < startTime;
+                if (currentTime <= startTime && currentTime <= endTime)
                 {
-                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                    context.Response.StatusCode = 503;
                     await context.Response.WriteAsync("The cinema is unfortunately closed at this moment. Please try again at 09:00 in the morning.");
                     return;
                 }
@@ -78,3 +83,9 @@ namespace StarterKit
         }
     }
 }
+//class for options
+public class TheatreHours
+    {
+        public string OpeningTime { get; set; }
+        public string ClosingTime { get; set; }
+    }

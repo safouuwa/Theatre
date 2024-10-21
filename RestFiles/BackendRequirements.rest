@@ -141,11 +141,11 @@ Content-Type: application/json
     "Requests" : [
         {
             "TheatreShowDateId" : 1,
-            "NumberOfTickets" : 2
+            "NumberOfTickets" : 1
         },
         {
             "TheatreShowDateId" : 1,
-            "NumberOfTickets" : 2
+            "NumberOfTickets" : 1
         }
     ]
 }
