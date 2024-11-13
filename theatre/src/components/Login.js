@@ -1,18 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; 
-import './Login.css'; // Import the CSS for this component
+import './Login.css'; 
 
 function Login() {
-  // State to keep track of user input and the error message
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
 
-  // Simulate login function
   const handleLogin = () => {
-    // Clear previous success or error messages
     setErrorMessage('');
     setSuccessMessage('');
 
@@ -31,7 +28,7 @@ function Login() {
 
       {/* Username input */}
       <div>
-        <label>Username</label>
+        <label>Username </label>
         <input
           type="text"
           value={username}
@@ -41,7 +38,7 @@ function Login() {
 
       {/* Password input */}
       <div>
-        <label>Password</label>
+        <label>Password </label>
         <input
           type="password"
           value={password}
