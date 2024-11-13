@@ -9,6 +9,12 @@ function Login() {
   const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
 
+  const handleEnter = (event) => {
+    if (event.key === 'Enter') {
+      handleLogin()
+    }
+  };
+
   const handleLogin = () => {
     setErrorMessage('');
     setSuccessMessage('');
@@ -33,6 +39,7 @@ function Login() {
           type="text"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          onKeyDown={handleEnter}
         />
       </div>
 
@@ -43,6 +50,7 @@ function Login() {
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          onKeyDown={handleEnter}
         />
       </div>
 
