@@ -2,12 +2,25 @@
     padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(240, 240, 240, 0.1);
 }
-
+.
 .reservations-title {
     text-align: center;
     font-size: 24px;
+    font-weight: 600;
+    color: white;
     margin-bottom: 20px;
+}
+
+.theatre-shows-title {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: white;
 }
 
 .search-bar {
@@ -17,20 +30,27 @@
 }
 
 .search-bar input {
-    width: 300px;
-    padding: 10px;
-    border: 1px solid #ddd;
+    width: 350px;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
     border-radius: 5px;
-    margin-right: 10px;
+    margin-right: 15px;
+    transition: border-color 0.3s ease;
 }
 
+.search-bar input:focus {
+    border-color: #007bff;
+    outline: none;
+}
 .search-bar button {
     background-color: #007bff;
     color: white;
     border: none;
     border-radius: 5px;
-    padding: 10px 20px;
+    padding: 12px 25px;
     cursor: pointer;
+    font-size: 16px;
     transition: background-color 0.3s ease;
 }
 
@@ -41,19 +61,23 @@
 .reservations-table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
+    font-size: 16px;
+    text-align: left;
+    color: #ddd;
 }
 
 .reservations-table th,
 .reservations-table td {
     border: 1px solid #ddd;
     text-align: left;
-    padding: 8px;
+    padding: 12px;
 }
 
 .reservations-table th {
     background-color: #f4f4f4;
     font-weight: bold;
+    color: #ddd;
 }
 
 .reservations-table tr:nth-child(even) {
@@ -64,93 +88,15 @@
     background-color: #f1f1f1;
 }
 
-.action-buttons {
-    display: flex;
-    gap: 10px;
-}
-
-.action-buttons button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 5px 10px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.action-buttons button:hover {
-    background-color: #0056b3;
-}
-.reservations-container {
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.reservations-title {
+.reservations-table p {
+    font-size: 18;
     text-align: center;
-    font-size: 24px;
-    margin-bottom: 20px;
-}
-
-.search-bar {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-}
-
-.search-bar input {
-    width: 300px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    margin-right: 10px;
-}
-
-.search-bar button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.search-bar button:hover {
-    background-color: #0056b3;
-}
-
-.reservations-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-}
-
-.reservations-table th,
-.reservations-table td {
-    border: 1px solid #ddd;
-    text-align: left;
-    padding: 8px;
-}
-
-.reservations-table th {
-    background-color: #f4f4f4;
-    font-weight: bold;
-}
-
-.reservations-table tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-.reservations-table tr:hover {
-    background-color: #f1f1f1;
+    color: #777;
 }
 
 .action-buttons {
     display: flex;
-    gap: 10px;
+    gap: 12px;
 }
 
 .action-buttons button {
@@ -158,11 +104,19 @@
     color: white;
     border: none;
     border-radius: 4px;
-    padding: 5px 10px;
+    padding: 8px 16px;
     cursor: pointer;
+    font-size: 14px;
     transition: background-color 0.3s ease;
 }
 
 .action-buttons button:hover {
     background-color: #0056b3;
+}
+
+.reservations-container input,
+.reservations-container button {
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 16px;
 }

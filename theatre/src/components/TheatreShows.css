@@ -1,40 +1,95 @@
+
 .theatre-shows-container {
     padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
+    background-color: #222;
+    color: #fff; 
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
+
 
 .theatre-shows-title {
     text-align: center;
     font-size: 24px;
     margin-bottom: 20px;
+    color: #fff;
 }
+
+
+.add-show-form {
+    background-color: #333; 
+    border: 1px solid #444;
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.add-show-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #ddd;
+}
+
+.add-show-form input,
+.add-show-form textarea,
+.add-show-form select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #555;
+    border-radius: 5px;
+    background-color: #444;
+    color: #fff;
+}
+
+.add-show-form button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.add-show-form button:hover {
+    background-color: #218838;
+}
+
 
 .theatre-shows-table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
-}
-
-.theatre-shows-table th,
-.theatre-shows-table td {
-    border: 1px solid #ddd;
-    text-align: left;
-    padding: 8px;
+    color: #fff;
 }
 
 .theatre-shows-table th {
-    background-color: #f4f4f4;
+    background-color: #444; 
+    color: #fff; 
     font-weight: bold;
+    padding: 8px;
+    text-align: left;
+}
+
+.theatre-shows-table td {
+    background-color: #333; 
+    color: #fff; 
+    padding: 8px;
 }
 
 .theatre-shows-table tr:nth-child(even) {
-    background-color: #f9f9f9;
+    background-color: #555; 
 }
 
 .theatre-shows-table tr:hover {
-    background-color: #f1f1f1;
+    background-color: #666; 
 }
+
 
 .action-buttons {
     display: flex;
@@ -55,40 +110,10 @@
     background-color: #0056b3;
 }
 
-.add-show-form {
-    background-color: #f8f8f8;
-    border: 1px solid #ddd;
-    padding: 20px;
-    border-radius: 5px;
-    margin-bottom: 20px;
+.action-buttons .delete-button {
+    background-color: #dc3545; 
 }
 
-.add-show-form label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-.add-show-form input,
-.add-show-form textarea,
-.add-show-form select {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
-.add-show-form button {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.add-show-form button:hover {
-    background-color: #218838;
+.action-buttons .delete-button:hover {
+    background-color: #c82333;
 }
