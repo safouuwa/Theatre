@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; 
+import axios from 'axios';
 import './Login.css'; 
 
 function Login() {
@@ -10,18 +11,19 @@ function Login() {
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    setErrorMessage('');
-    setSuccessMessage('');
-
-    // Simulate login logic (this will be replaced with backend logic later)
-    if (username === 'admin' && password === 'password') {
-      setSuccessMessage('Login successful!');
-      navigate('/dashboard');
-    } else {
-      setErrorMessage('Invalid username or password.');
-    }
-  };
-
+    axios.post('http://localhost:5097/api/v1/Login/Login', { username, password })
+      .then(() => {
+        setSuccessMessage('Login successful! Redirecting to dashboard...');
+        setTimeout(() => navigate('/dashboard'), 1000);
+      })
+      .catch((error) => {
+        if (error.response.status === 401) {
+          setErrorMessage('Invalid username or password');
+        } else {
+          setErrorMessage('An error occurred. Please try again later.');
+        }
+      });
+    };
   return (
     <div className="login-container">
       <h2>Login</h2>
@@ -55,5 +57,4 @@ function Login() {
     </div>
   );
 }
-
 export default Login;

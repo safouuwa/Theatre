@@ -1,66 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './TheatreShows.css';
+
 
 function TheatreShows() {
-    const [shows, setShows] = useState([
-        { id: 1, title: "The Phantom of the Opera", description: "A haunting musical.", price: 100 },
-        { id: 2, title: "Hamilton", description: "A story of the American Founding Father.", price: 150 },
-        { id: 3, title: "Les Misérables", description: "A tale of revolution and redemption.", price: 120 }
-    ]);
-    const [form, setForm] = useState({ title: '', description: '', date: '', time: '' });
+    const [shows, setShows] = useState([]);
+    const [form, setForm] = useState({ title: '', description: '', price: '', venueID: '' });
     const [editingShow, setEditingShow] = useState(null);
 
-// add the greyed out code and remove the hardcoded shows array to fetch data from the API
-
-//    useEffect(() => {
-//        axios.get('/api/v1/TheatreShow').then((response) => setShows(response.data))
-//        .catch((error) => { 
-//            console.error('Error fetching data: ' + error);
-//        });
-//    }, []);
+    useEffect(() => {
+        axios.get('http://localhost:5097/api/v1/TheatreShow').then((response) => setShows(response.data))
+        .catch((error) => { 
+            console.error('Error fetching data: ' + error);
+        });
+    }, []);
 
     const handleChange = (e) =>
         setForm({ ...form, [e.target.name]: e.target.value });
     
     const handleSubmit = () => {
         if (editingShow) {
-            // Update the existing show
-            setShows((prev) =>
-                prev.map((show) =>
-                    show.id === editingShow.id ? { ...show, ...form } : show
-                )
-            );
-            setEditingShow(null);
+            axios.put('http://localhost:5097/api/v1/TheatreShow/update', { ...editingShow, ...form }).then(() => {
+                setEditingShow(null);
+                setForm({ title: '', description: '', price: '', venueID: '' });
+                refreshShows();
+            });
+            
         } else {
-            // Add a new show
-            const newShow = { id: Date.now(), ...form }; // Use Date.now() as a temporary ID
-            setShows((prev) => [...prev, newShow]);
+            axios.post('http://localhost:5097/api/v1/TheatreShow', form).then(() => {
+                setForm({ title: '', description: '', price: '', venueID: '' });
+                refreshShows();
+            });
         }
-        setForm({ title: '', description: '', price: 0 }); // Clear the form
     };
 
-//    const handleSubmit = () => {
-//        if (editingShow) {
-//            axios.put('/api/v1/TheatreShow/update', { ...editingShow, ...form }).then(() => {
-//                setEditingShow(null);
-//                setForm({ title: '', description: '', price: 0 });
-//                refreshShows();
-//            });
-//        } else {
-//            axios.post('/api/v1/TheatreShow', form).then(() => {
-//                setForm({ title: '', description: '', price: 0 });
-//                refreshShows();
-//            });
-//        }
-//    };
-//
     const refreshShows = () => {
-        axios.get('/api/v1/TheatreShow').then((response) => setShows(response.data));
+        axios.get('http://localhost:5097/api/v1/TheatreShow').then((response) => setShows(response.data));
     };
 
     const handleDelete = (id) => {
         if (window.confirm('Are you sure you want to delete this show?')) {
-            axios.delete(`/api/v1/TheatreShow/${id}`).then(() => refreshShows());
+            axios.delete(`http://localhost:5097/api/v1/TheatreShow/${id}`).then(() => refreshShows());
         }
     };
 
@@ -71,6 +51,7 @@ function TheatreShows() {
                 <input name="title" value={form.title} onChange={handleChange} placeholder="Title" required />
                 <input name="description" value={form.description} onChange={handleChange} placeholder="Description" required />
                 <input name="price" value={form.price} onChange={handleChange} placeholder="Price" required type="number" />
+                <input name="venueID" value={form.venueID} onChange={handleChange} placeholder="Venue ID" required type="number" />
                 <button type="submit">{editingShow ? 'Update Show' : 'Add Show'}</button>
             </form>
             {shows.length > 0 && (
@@ -80,7 +61,7 @@ function TheatreShows() {
                             <th>Title</th>
                             <th>Description</th>
                             <th>Price</th>
-                            <th>Actions</th>
+                            <th>VenueID</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -89,6 +70,7 @@ function TheatreShows() {
                                 <td>{show.title}</td>
                                 <td>{show.description}</td>
                                 <td>{show.price}</td>
+                                <td>{show.venue.venueId}</td>
                                 <td className="action-buttons">
                                     <button onClick={() => { setEditingShow(show); setForm(show); }}>Edit</button>
                                     <button className="delete-button" onClick={() => handleDelete(show.id)}>Delete</button>

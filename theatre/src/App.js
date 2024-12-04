@@ -3,8 +3,8 @@ import { Route, Routes } from 'react-router-dom';
 import Login from './components/Login.js'; // Import the Login component
 
 import Dashboard from './components/Dashboard.js';  // Import Dashboard component
-import TheatreShows from './components/TheatreShows';  
-import Reservations from './components/Reservations';
+import TheatreShows from './components/TheatreShows.js';  
+import Reservations from './components/Reservations.js';
 
 function App() {
   return (
