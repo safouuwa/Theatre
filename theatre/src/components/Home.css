@@ -42,13 +42,15 @@
   }
   
   .show-item p {
-    color: #34495e;
-    margin-bottom: 0.5rem;
+    color: #7f8c8d;
+    margin: 0.5rem 0;
     line-height: 1.6;
   }
   
   .show-item p:last-child {
     margin-bottom: 0;
+    font-weight: bold;
+    color: #e74c3c;
   }
   
   @media (max-width: 768px) {
@@ -64,3 +66,13 @@
       grid-template-columns: 1fr;
     }
   }
+
+.home-container {
+    padding: 2rem;
+}
+
+.home-container h1 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #34495e;
+}

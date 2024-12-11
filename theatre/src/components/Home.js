@@ -10,11 +10,17 @@ function Home() {
     useEffect(() => {
         axios.get('http://localhost:5097/api/v1/TheatreShow')
             .then(response => {
+                console.log(response.data); // Inspect the data
                 const futureShows = response.data.filter(show => new Date(show.dateAndTime) > new Date());
+                console.log(futureShows); // Inspect the filtered shows
                 setShows(futureShows);
             })
             .catch(error => console.error('Error fetching shows:', error));
     }, []);
+
+    useEffect(() => {
+        console.log(shows); // Inspect the shows state
+    }, [shows]);
 
     const handleShowClick = (showId) => {
         navigate(`/shows/${showId}`);
@@ -24,14 +30,17 @@ function Home() {
         <div className="home-container">
             <h1>Available Shows</h1>
             <ul className="shows-list">
-                {shows.map(show => (
-                    <li key={show.theatreShowId} className="show-item" onClick={() => handleShowClick(show.theatreShowId)}>
-                        <h2>{show.title}</h2>
-                        <p>{show.description}</p>
-                        <p>Price: ${show.price}</p>
-                        <p>Venue: {show.venue.name}</p>
-                    </li>
-                ))}
+                {shows.length > 0 ? (
+                    shows.map(show => (
+                        <li key={show.id} className="show-item" onClick={() => handleShowClick(show.id)}>
+                            <h2>{show.name}</h2>
+                            <p>{show.details}</p>
+                            <p>Price: ${show.cost}</p>
+                        </li>
+                    ))
+                ) : (
+                    <p>No shows available</p>
+                )}
             </ul>
         </div>
     );
