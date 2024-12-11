@@ -28,6 +28,11 @@ function Home() {
 
     return (
         <div className="home-container">
+            {/* Login Button */}
+            <button className="login-button" onClick={() => navigate('/')}>
+                Login
+            </button>
+
             <h1>Available Shows</h1>
             <ul className="shows-list">
                 {shows.length > 0 ? (
