@@ -1,0 +1,61 @@
+.show-details-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .show-details-container h1 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 0.5rem;
+  }
+  
+  .show-details-container p {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+  
+  .show-details-container p:last-child {
+    margin-bottom: 0;
+  }
+  
+  .show-details-label {
+    font-weight: bold;
+    color: #444;
+  }
+  
+  .show-price {
+    font-size: 1.3rem;
+    color: #2c3e50;
+    font-weight: bold;
+  }
+  
+  .show-venue {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-top: 1rem;
+  }
+  
+  @media (max-width: 768px) {
+    .show-details-container {
+      padding: 1rem;
+      margin: 1rem;
+    }
+  
+    .show-details-container h1 {
+      font-size: 2rem;
+    }
+  
+    .show-details-container p {
+      font-size: 1rem;
+    }
+  }
+  
