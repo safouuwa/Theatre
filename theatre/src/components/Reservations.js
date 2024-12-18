@@ -2,36 +2,76 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Reservations.css';
 
-
 function Reservations() {
     const [reservations, setReservations] = useState([]);
     const [search, setSearch] = useState('');
  
     useEffect(() => {
-        axios.get('http://localhost:5097/api/v1/admin/reservations').then((response) => setReservations(response.data))
-        .catch((error) => { 
-            console.error('Error fetching data: ' + error);
-        });
+        fetchReservations();
     }, []);
 
-    const handleSearch = (e) => {
-        axios.get('http://localhost:5097/api/v1/admin/reservations?show=e').then((response) => setReservations(response.data));
+    const fetchReservations = (searchTerm = '') => {
+        const url = searchTerm 
+            ? `http://localhost:5097/api/v1/admin/reservations?show=${searchTerm}`
+            : 'http://localhost:5097/api/v1/admin/reservations';
+
+        axios.get(url)
+            .then((response) => {
+                console.log('API Response:', response.data);
+                setReservations(response.data);
+            })
+            .catch((error) => { 
+                console.error('Error fetching data:', error);
+            });
+    };
+
+    const handleSearch = () => {
+        fetchReservations(search);
     };        
 
     return (
-        <div>
+        <div className="reservations-container">
             <h1>Reservations</h1>
-            <input value={search} 
-            onChange={(e) => setSearch(e.target.value)} 
-            placeholder="Search by show title" />
-            <button onClick={handleSearch}>Search</button>
-            <ul>
-                {reservations.map((reservation) => (
-                    <li key={reservation.id}>
-                        {reservation.showTitle} - {reservation.date} - {reservation.customerName}
-                </li>
-                ))}
-            </ul>
+            <div className="search-container">
+                <input 
+                    value={search} 
+                    onChange={(e) => setSearch(e.target.value)} 
+                    placeholder="Search by show title" 
+                />
+                <button onClick={handleSearch}>Search</button>
+            </div>
+            <table className="reservations-table">
+                <thead>
+                    <tr>
+                        <th>Reservation ID</th>
+                        <th>Tickets</th>
+                        <th>Customer Name</th>
+                        <th>Show Title</th>
+                        <th>Date and Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {Array.isArray(reservations) ? (
+                        reservations.map((reservation) => (
+                            <tr key={reservation.reservationId}>
+                                <td>{reservation.reservationId || 'N/A'}</td>
+                                <td>{reservation.amountOfTickets || 'N/A'}</td>
+                                <td>{`${reservation.customer?.firstName || 'N/A'} ${reservation.customer?.lastName || ''}`}</td>
+                                <td>{reservation.theatreShowDate?.theatreShow?.title || 'N/A'}</td>
+                                <td>
+                                    {reservation.theatreShowDate?.dateAndTime
+                                        ? new Date(reservation.theatreShowDate.dateAndTime).toLocaleString()
+                                        : 'N/A'}
+                                </td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="5">No reservations found</td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
         </div>
     );
 }
