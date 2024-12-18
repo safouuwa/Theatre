@@ -177,8 +177,8 @@ function TheatreShows() {
                                     <td>{show.title}</td>
                                     <td>{show.description}</td>
                                     <td>{show.price}</td>
-                                    <td>{venues.find(v => v.id === show.venueId)?.name || 'Unknown'}</td>
-                                    <td>{new Date(show.showTime).toLocaleString()}</td>
+                                    <td>{show.venue.venueId}</td>
+                                    <td>{show.theatreShowDates.dateAndTime}</td>
                                     <td>
                                         <div className="action-buttons">
                                             <button className="theatre-shows-button edit" onClick={() => { setEditingShow(show); setForm({...show, showTime: new Date(show.showTime)}); }}>Edit</button>
