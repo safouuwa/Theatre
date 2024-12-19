@@ -43,49 +43,38 @@ POST http://localhost:5097/api/v1/TheatreShow
 Content-Type: application/json
 
 {
-    "theatreShowId": 11,
     "title": "abc",
     "description": "test",
     "price": 10,
     "theatreShowDates": [
       {
-        "theatreShowDateId": 4,
-        "dateAndTime": "2024-12-12T00:00:00",
-        "theatreShowId": 10
+        "dateAndTime": "2024-12-12T00:00:00"
       }
     ],
     "venue": {
-      "venueId": 1,
-      "name": "test",
-      "capacity": 10
+      "venueid": 1
     }
 }
 #####
 // Update a theatreshow; admin login required; returns OK or BadRequest if id is already in database or incorrect data is entered
-PUT http://localhost:5097/api/v1/TheatreShow/update
+PUT http://localhost:5097/api/v1/TheatreShow/16
 Content-Type: application/json
 
 {
-    "theatreShowId": 11,
     "title": "abcUpdated",
     "description": "testUpdated",
-    "price": 10,
+    "price": 100,
     "theatreShowDates": [
       {
-        "theatreShowDateId": 4,
-        "dateAndTime": "2024-12-12T00:00:00",
-        "theatreShowId": 10
+        "dateAndTime": "2024-11-11T00:00:00"
       },
       {
-        "theatreShowDateId": 5,
-        "dateAndTime": "2026-12-12T00:00:00",
-        "theatreShowId": 10
+        "dateAndTime": "2026-11-11T00:00:00"
       }
     ],
     "venue": {
-      "venueId": 1,
-      "name": "test",
-      "capacity": 10
+      "name": "testNew",
+      "capacity": 100
     }
 }
 #####

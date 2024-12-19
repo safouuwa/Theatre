@@ -25,7 +25,7 @@ public class TheatreShowService : ControllerBase, ITheatreShowService
         if (show is null) return null;
         return new TheatreShowDisplayModel
         {
-            TheatreShowId = show.TheatreShowId,
+            TheatreShowId = (int)show.TheatreShowId,
             Title = show.Title,
             Description = show.Description,
             Price = show.Price,
@@ -33,13 +33,13 @@ public class TheatreShowService : ControllerBase, ITheatreShowService
             {
                 VenueId = show.Venue?.VenueId ?? 0,
                 Name = show.Venue?.Name,
-                Capacity = show.Venue.Capacity
+                Capacity = (int)show.Venue.Capacity
             },
             TheatreShowDates = show.theatreShowDates?.Select(date => new TheatreShowDateDisplayModelForField
             {
-                TheatreShowDateId = date.TheatreShowDateId,
+                TheatreShowDateId = (int)date.TheatreShowDateId,
                 DateAndTime = date.DateAndTime,
-                TheatreShowId = show.TheatreShowId
+                TheatreShowId = (int)show.TheatreShowId
             }).ToList()
         };
     }
@@ -49,11 +49,11 @@ public class TheatreShowService : ControllerBase, ITheatreShowService
         if (show is null) return null;
         return new TheatreShowDateDisplayModel
         {
-            TheatreShowDateId = show.TheatreShowDateId,
+            TheatreShowDateId = (int)show.TheatreShowDateId,
             DateAndTime = show.DateAndTime,
             TheatreShow = new TheatreShowDisplayModelForField
             {
-                TheatreShowId = show.TheatreShow.TheatreShowId,
+                TheatreShowId = (int)show.TheatreShow.TheatreShowId,
                 Title = show.TheatreShow.Title,
                 Description = show.TheatreShow.Description,
                 Price = show.TheatreShow.Price,
@@ -61,7 +61,7 @@ public class TheatreShowService : ControllerBase, ITheatreShowService
                 {
                     VenueId = show.TheatreShow.Venue?.VenueId ?? 0,
                     Name = show.TheatreShow.Venue?.Name,
-                    Capacity = show.TheatreShow.Venue.Capacity
+                    Capacity = (int)show.TheatreShow.Venue.Capacity
                 },
             }
         };
@@ -90,20 +90,25 @@ public TheatreShowDisplayModel RetrieveById(int id)
 
     public TheatreShowDisplayModel PostTheatreShow(TheatreShow theatreShow)
     {
-        if (_context.TheatreShow.Any(x => x.TheatreShowId == theatreShow.TheatreShowId)) return null;
+        if (theatreShow.TheatreShowId == null) theatreShow.TheatreShowId = _context.TheatreShow.Count() > 0 ?_context.TheatreShow.Max(x => x.TheatreShowId) + 1 : 1;
         var existingVenue = _context.Venue.FirstOrDefault(v => v.VenueId == theatreShow.Venue.VenueId);
+        if (existingVenue == null && theatreShow.Venue.VenueId != null) return null;
         if (existingVenue == null)
         {
+            theatreShow.Venue.VenueId = _context.Venue.Count() > 0 ? _context.Venue.Max(x => x.VenueId) + 1 : 1;
             _context.Venue.Add(theatreShow.Venue);
         }
         else
         {
             theatreShow.Venue = existingVenue;
         }
-    
+        int i = 0;
         _context.TheatreShow.Add(theatreShow);
         foreach (TheatreShowDate t in theatreShow.theatreShowDates)
         {
+            i++;
+            t.TheatreShowDateId = _context.TheatreShowDate.Count() > 0 ? _context.TheatreShowDate.Max(x => x.TheatreShowDateId) + i : 1;
+            t.TheatreShow = theatreShow;
             _context.TheatreShowDate.Add(t);
         }
     

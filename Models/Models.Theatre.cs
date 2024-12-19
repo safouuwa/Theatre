@@ -53,7 +53,7 @@ namespace StarterKit.Models
 
     public class TheatreShowDate
     {
-        public int TheatreShowDateId { get; set; }
+        public int? TheatreShowDateId { get; set; }
 
         public DateTime DateAndTime { get; set; } //"MM-dd-yyyy HH:mm"
 
@@ -64,7 +64,7 @@ namespace StarterKit.Models
 
     public class TheatreShow
     {
-        public int TheatreShowId { get; set; }
+        public int? TheatreShowId { get; set; }
 
         public string? Title { get; set; }
 
@@ -80,11 +80,11 @@ namespace StarterKit.Models
 
     public class Venue
     {
-        public int VenueId { get; set; }
+        public int? VenueId { get; set; }
 
         public string? Name { get; set; }
 
-        public int Capacity { get; set; }
+        public int? Capacity { get; set; }
         public List<TheatreShow>? TheatreShows { get; set; }
     }
 }
