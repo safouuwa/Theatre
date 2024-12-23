@@ -7,78 +7,75 @@ import './TheatreShows.css';
 function TheatreShows() {
     const [shows, setShows] = useState([]);
     const [venues, setVenues] = useState([]);
-    const [form, setForm] = useState({ title: '', description: '', price: '', venueId: '', showTime: new Date() });
+    const [form, setForm] = useState({ 
+        title: '', 
+        description: '', 
+        price: '', 
+        venueId: '', 
+        showTime: new Date(),
+        venueName: '',
+        venuecapacity: ''
+    });
     const [editingShow, setEditingShow] = useState(null);
     const [toast, setToast] = useState(null);
+    const [useExistingVenue, setUseExistingVenue] = useState(true);
 
     useEffect(() => {
         refreshShows();
         fetchVenues();
     }, []);
 
+    useEffect(() => {
+        if (editingShow) {
+            setForm({
+                ...editingShow,
+                showTime: new Date(editingShow.showTime),
+                venueId: editingShow.venue.venueId.toString()
+            });
+            setUseExistingVenue(true);
+        } else {
+            setForm({
+                title: '',
+                description: '',
+                price: '',
+                venueId: '',
+                showTime: new Date(),
+                venueName: '',
+                venuecapacity: ''
+            });
+        }
+    }, [editingShow]);
+
     const refreshShows = () => {
         axios.get('http://localhost:5097/api/v1/TheatreShow')
-            .then((response) => setShows(response.data))
+            .then((response) => {
+                setShows(response.data);
+            })
             .catch((error) => {
                 console.error('Error fetching shows:', error);
-                showToast("Error", "Failed to fetch shows. Please try again.", "error");
             });
     };
 
     const fetchVenues = () => {
-        axios.get('http://localhost:3000/api/venues')
-            .then((response) =>
-                {
-                    console.log('Venues fetched:', response.data);
+        axios.get('http://localhost:5097/api/v1/Venue')
+            .then((response) => {
                 setVenues(response.data);
-                })
+            })
             .catch((error) => {
                 console.error('Error fetching venues:', error);
-                showToast("Error", "Failed to fetch venues. Please try again.", "error");
             });
     };
 
-    const handleChange = (e) =>
+    const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
+    };
 
-    const handleVenueChange = (e) =>
+    const handleVenueChange = (e) => {
         setForm({ ...form, venueId: e.target.value });
+    };
 
-    const handleDateChange = (date) =>
+    const handleDateChange = (date) => {
         setForm({ ...form, showTime: date });
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const payload = {
-            ...form,
-            price: parseFloat(form.price),
-            venueId: parseInt(form.venueId),
-            showTime: form.showTime.toISOString()
-        };
-        if (editingShow) {
-            axios.put(`http://localhost:5097/api/v1/TheatreShow/update`, { ...editingShow, ...payload })
-                .then(() => {
-                    setEditingShow(null);
-                    setForm({ title: '', description: '', price: '', venueId: '', showTime: new Date() });
-                    refreshShows();
-                    showToast("Success", "Show updated successfully.", "success");
-                })
-                .catch((error) => {
-                    console.error('Error updating show:', error);
-                    showToast("Error", "Failed to update show. Please try again.", "error");
-                });
-        } else {
-            axios.post('http://localhost:5097/api/v1/TheatreShow', payload)
-                .then(() => {
-                    setForm({ title: '', description: '', price: '', venueId: '', showTime: new Date() });
-                    refreshShows();
-                    showToast("Success", "Show added successfully.", "success");
-                })
-                .catch((error) => {
-                    console.error('Error adding show:', error);
-                    showToast("Error", "Failed to add show. Please try again.", "error");
-                });
-        }
     };
 
     const handleDelete = (id) => {
@@ -97,7 +94,61 @@ function TheatreShows() {
 
     const showToast = (title, message, type) => {
         setToast({ title, message, type });
-        setTimeout(() => setToast(null), 3000);
+        setTimeout(() => {
+            setToast(null);
+        }, 5000);
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        let payload = {
+            ...form,
+            price: parseFloat(form.price),
+            showTime: form.showTime.toISOString()
+        };
+
+        const submitShow = (venueId) => {
+            payload = { ...payload, venueId };
+            if (editingShow) {
+                axios.put(`http://localhost:5097/api/v1/TheatreShow/update`, { ...editingShow, ...payload })
+                    .then(() => {
+                        setEditingShow(null);
+                        setForm({ title: '', description: '', price: '', venueId: '', showTime: new Date(), venueName: '', venuecapacity: '' });
+                        refreshShows();
+                        showToast("Success", "Show updated successfully.", "success");
+                    })
+                    .catch((error) => {
+                        console.error('Error updating show:', error);
+                        showToast("Error", "Failed to update show. Please try again.", "error");
+                    });
+            } else {
+                axios.post('http://localhost:5097/api/v1/TheatreShow', payload)
+                    .then(() => {
+                        setForm({ title: '', description: '', price: '', venueId: '', showTime: new Date(), venueName: '', venuecapacity: '' });
+                        refreshShows();
+                        showToast("Success", "Show added successfully.", "success");
+                    })
+                    .catch((error) => {
+                        console.error('Error adding show:', error);
+                        showToast("Error", "Failed to add show. Please try again.", "error");
+                    });
+            }
+        };
+
+        if (useExistingVenue) {
+            submitShow(parseInt(form.venueId));
+        } else {
+            // Create new venue first
+            axios.post('http://localhost:3000/api/venues', { name: form.venueName, capacity: parseInt(form.venuecapacity) })
+                .then((response) => {
+                    submitShow(response.data.id);
+                    fetchVenues(); // Refresh the venues list
+                })
+                .catch((error) => {
+                    console.error('Error creating new venue:', error);
+                    showToast("Error", "Failed to create new venue. Please try again.", "error");
+                });
+        }
     };
 
     return (
@@ -130,19 +181,52 @@ function TheatreShows() {
                         type="number"
                         className="theatre-shows-input"
                     />
-                    <select
-                        value={form.venueId}
-                        onChange={handleVenueChange}
-                        className="theatre-shows-select"
-                        required
-                    >
-                        <option value="">Select a venue</option>
-                        {venues.map((venue) => (
-                            <option key={venue.id} value={venue.id.toString()}>
-                                {venue.name}
-                            </option>
-                        ))}
-                    </select>
+                    <div className="venue-selection">
+                        <label className="switch">
+                            <input
+                                type="checkbox"
+                                checked={useExistingVenue}
+                                onChange={() => setUseExistingVenue(!useExistingVenue)}
+                            />
+                            <span className="slider round"></span>
+                        </label>
+                        <span>{useExistingVenue ? "Select Existing Venue" : "Add New Venue"}</span>
+                    </div>
+                    {useExistingVenue ? (
+                        <select
+                            value={form.venueId}
+                            onChange={handleVenueChange}
+                            className="theatre-shows-select"
+                            required
+                        >
+                            <option value="">Select a venue</option>
+                            {venues.map((venue) => (
+                                <option key={venue.venueId} value={venue.venueId}>
+                                    {venue.venueId} - {venue.name} - {`capacity: ${venue.capacity}`}
+                                </option>
+                            ))}
+                        </select>
+                    ) : (
+                        <>
+                            <input
+                                name="venueName"
+                                value={form.venueName}
+                                onChange={handleChange}
+                                placeholder="Venue Name"
+                                required
+                                className="theatre-shows-input"
+                            />
+                            <input
+                                name="venuecapacity"
+                                value={form.venuecapacity}
+                                onChange={handleChange}
+                                placeholder="Venue capacity"
+                                required
+                                type="number"
+                                className="theatre-shows-input"
+                            />
+                        </>
+                    )}
                     <div className="theatre-shows-datepicker">
                         <label htmlFor="showTime" className="theatre-shows-label">Show Date and Time</label>
                         <DatePicker
@@ -181,7 +265,15 @@ function TheatreShows() {
                                     <td>{show.theatreShowDates.dateAndTime}</td>
                                     <td>
                                         <div className="action-buttons">
-                                            <button className="theatre-shows-button edit" onClick={() => { setEditingShow(show); setForm({...show, showTime: new Date(show.showTime)}); }}>Edit</button>
+                                            <button className="theatre-shows-button edit" onClick={() => {
+                                                setEditingShow(show);
+                                                setForm({
+                                                    ...show,
+                                                    showTime: new Date(show.showTime),
+                                                    venueId: show.venue.venueId.toString()
+                                                });
+                                                setUseExistingVenue(true);
+                                            }}>Edit</button>
                                             <button className="theatre-shows-button delete" onClick={() => handleDelete(show.id)}>Delete</button>
                                         </div>
                                     </td>

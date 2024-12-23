@@ -246,4 +246,6 @@ Content-Type: application/json
     "NumberOfTickets" : 1
   }
 ]
-
+#####
+// venue retrieval
+GET http://localhost:5097/api/v1/Venue

@@ -42,6 +42,7 @@ namespace StarterKit
             builder.Services.AddScoped<IReservationService, ReservationService>();
             builder.Services.AddScoped<IPointService, PointService>();
             builder.Services.AddScoped<IRewardService, RewardService>();
+            builder.Services.AddScoped<IVenueService, VenueService>();
 
 
             builder.Services.AddDbContext<DatabaseContext>(
