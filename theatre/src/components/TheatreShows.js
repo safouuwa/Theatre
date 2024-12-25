@@ -21,9 +21,8 @@ function TheatreShows() {
     const [useExistingVenue, setUseExistingVenue] = useState(true);
 
     useEffect(() => {
-        refreshShows();
-        fetchVenues();
-    }, []);
+        refreshData();
+    });
 
     useEffect(() => {
         if (editingShow) {
@@ -53,6 +52,11 @@ function TheatreShows() {
             venueCapacity: ''
         });
         setUseExistingVenue(true);
+    };
+
+    const refreshData = () => {
+        refreshShows();
+        fetchVenues();
     };
 
     const refreshShows = () => {
@@ -91,7 +95,7 @@ function TheatreShows() {
         if (window.confirm('Are you sure you want to delete this show?')) {
             axios.delete(`http://localhost:5097/api/v1/TheatreShow/${id}`)
                 .then(() => {
-                    refreshShows();
+                    refreshData();
                     showToast("Success", "Show deleted successfully.", "success");
                 })
                 .catch((error) => {
@@ -133,7 +137,7 @@ function TheatreShows() {
                 .then(() => {
                     setEditingShow(null);
                     resetForm();
-                    refreshShows();
+                    refreshData();
                     showToast("Success", "Show updated successfully.", "success");
                 })
                 .catch((error) => {
@@ -144,7 +148,7 @@ function TheatreShows() {
             axios.post('http://localhost:5097/api/v1/TheatreShow', payload)
                 .then(() => {
                     resetForm();
-                    refreshShows();
+                    refreshData();
                     showToast("Success", "Show added successfully.", "success");
                 })
                 .catch((error) => {
