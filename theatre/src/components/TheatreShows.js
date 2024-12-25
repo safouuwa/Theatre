@@ -14,7 +14,7 @@ function TheatreShows() {
         venueId: '', 
         showTime: new Date(),
         venueName: '',
-        venuecapacity: ''
+        venueCapacity: ''
     });
     const [editingShow, setEditingShow] = useState(null);
     const [toast, setToast] = useState(null);
@@ -29,22 +29,31 @@ function TheatreShows() {
         if (editingShow) {
             setForm({
                 ...editingShow,
-                showTime: new Date(editingShow.showTime),
-                venueId: editingShow.venue.venueId.toString()
+                showTime: editingShow.theatreShowDates?.[0]?.dateAndTime 
+                    ? new Date(editingShow.theatreShowDates[0].dateAndTime)
+                    : new Date(),
+                venueId: editingShow.venue?.venueId?.toString() || '',
+                venueName: editingShow.venue?.name || '',
+                venueCapacity: editingShow.venue?.capacity || ''
             });
-            setUseExistingVenue(true);
+            setUseExistingVenue(!!editingShow.venue?.venueId);
         } else {
-            setForm({
-                title: '',
-                description: '',
-                price: '',
-                venueId: '',
-                showTime: new Date(),
-                venueName: '',
-                venuecapacity: ''
-            });
+            resetForm();
         }
     }, [editingShow]);
+
+    const resetForm = () => {
+        setForm({
+            title: '',
+            description: '',
+            price: '',
+            venueId: '',
+            showTime: new Date(),
+            venueName: '',
+            venueCapacity: ''
+        });
+        setUseExistingVenue(true);
+    };
 
     const refreshShows = () => {
         axios.get('http://localhost:5097/api/v1/TheatreShow')
@@ -101,54 +110,53 @@ function TheatreShows() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        let payload = {
-            ...form,
+        
+        const payload = {
+            title: form.title,
+            description: form.description,
             price: parseFloat(form.price),
-            showTime: form.showTime.toISOString()
+            theatreShowDates: [
+                {
+                    dateAndTime: form.showTime.toISOString()
+                }
+            ],
+            venue: useExistingVenue 
+                ? { venueId: parseInt(form.venueId) }
+                : { 
+                    name: form.venueName,
+                    capacity: parseInt(form.venueCapacity)
+                  }
         };
 
-        const submitShow = (venueId) => {
-            payload = { ...payload, venueId };
-            if (editingShow) {
-                axios.put(`http://localhost:5097/api/v1/TheatreShow/update`, { ...editingShow, ...payload })
-                    .then(() => {
-                        setEditingShow(null);
-                        setForm({ title: '', description: '', price: '', venueId: '', showTime: new Date(), venueName: '', venuecapacity: '' });
-                        refreshShows();
-                        showToast("Success", "Show updated successfully.", "success");
-                    })
-                    .catch((error) => {
-                        console.error('Error updating show:', error);
-                        showToast("Error", "Failed to update show. Please try again.", "error");
-                    });
-            } else {
-                axios.post('http://localhost:5097/api/v1/TheatreShow', payload)
-                    .then(() => {
-                        setForm({ title: '', description: '', price: '', venueId: '', showTime: new Date(), venueName: '', venuecapacity: '' });
-                        refreshShows();
-                        showToast("Success", "Show added successfully.", "success");
-                    })
-                    .catch((error) => {
-                        console.error('Error adding show:', error);
-                        showToast("Error", "Failed to add show. Please try again.", "error");
-                    });
-            }
-        };
-
-        if (useExistingVenue) {
-            submitShow(parseInt(form.venueId));
-        } else {
-            // Create new venue first
-            axios.post('http://localhost:3000/api/venues', { name: form.venueName, capacity: parseInt(form.venuecapacity) })
-                .then((response) => {
-                    submitShow(response.data.id);
-                    fetchVenues(); // Refresh the venues list
+        if (editingShow) {
+            axios.put(`http://localhost:5097/api/v1/TheatreShow/${editingShow.theatreShowId}`, payload)
+                .then(() => {
+                    setEditingShow(null);
+                    resetForm();
+                    refreshShows();
+                    showToast("Success", "Show updated successfully.", "success");
                 })
                 .catch((error) => {
-                    console.error('Error creating new venue:', error);
-                    showToast("Error", "Failed to create new venue. Please try again.", "error");
+                    console.error('Error updating show:', error);
+                    showToast("Error", "Failed to update show. Please try again.", "error");
+                });
+        } else {
+            axios.post('http://localhost:5097/api/v1/TheatreShow', payload)
+                .then(() => {
+                    resetForm();
+                    refreshShows();
+                    showToast("Success", "Show added successfully.", "success");
+                })
+                .catch((error) => {
+                    console.error('Error adding show:', error);
+                    showToast("Error", "Failed to add show. Please try again.", "error");
                 });
         }
+    };
+
+    const handleCancelEdit = () => {
+        setEditingShow(null);
+        resetForm();
     };
 
     return (
@@ -202,7 +210,7 @@ function TheatreShows() {
                             <option value="">Select a venue</option>
                             {venues.map((venue) => (
                                 <option key={venue.venueId} value={venue.venueId}>
-                                    {venue.venueId} - {venue.name} - {`capacity: ${venue.capacity}`}
+                                    {venue.name} - {`capacity: ${venue.capacity}`}
                                 </option>
                             ))}
                         </select>
@@ -217,10 +225,10 @@ function TheatreShows() {
                                 className="theatre-shows-input"
                             />
                             <input
-                                name="venuecapacity"
-                                value={form.venuecapacity}
+                                name="venueCapacity"
+                                value={form.venueCapacity}
                                 onChange={handleChange}
-                                placeholder="Venue capacity"
+                                placeholder="Venue Capacity"
                                 required
                                 type="number"
                                 className="theatre-shows-input"
@@ -239,9 +247,16 @@ function TheatreShows() {
                             className="theatre-shows-input"
                         />
                     </div>
-                    <button type="submit" className="theatre-shows-button">
-                        {editingShow ? 'Update Show' : 'Add Show'}
-                    </button>
+                    <div className="form-buttons">
+                        <button type="submit" className="theatre-shows-button">
+                            {editingShow ? 'Update Show' : 'Add Show'}
+                        </button>
+                        {editingShow && (
+                            <button type="button" onClick={handleCancelEdit} className="theatre-shows-button cancel">
+                                Cancel Edit
+                            </button>
+                        )}
+                    </div>
                 </form>
                 {shows.length > 0 && (
                     <table className="theatre-shows-table">
@@ -257,24 +272,30 @@ function TheatreShows() {
                         </thead>
                         <tbody>
                             {shows.map((show) => (
-                                <tr key={show.id}>
+                                <tr key={show.theatreShowId}>
                                     <td>{show.title}</td>
                                     <td>{show.description}</td>
                                     <td>{show.price}</td>
-                                    <td>{show.venue.venueId}</td>
-                                    <td>{show.theatreShowDates.dateAndTime}</td>
+                                    <td>{show.venue?.name || 'N/A'}</td>
+                                    <td>
+                                        {show.theatreShowDates?.[0]?.dateAndTime
+                                            ? new Date(show.theatreShowDates[0].dateAndTime).toLocaleString()
+                                            : 'N/A'}
+                                    </td>
                                     <td>
                                         <div className="action-buttons">
-                                            <button className="theatre-shows-button edit" onClick={() => {
-                                                setEditingShow(show);
-                                                setForm({
-                                                    ...show,
-                                                    showTime: new Date(show.showTime),
-                                                    venueId: show.venue.venueId.toString()
-                                                });
-                                                setUseExistingVenue(true);
-                                            }}>Edit</button>
-                                            <button className="theatre-shows-button delete" onClick={() => handleDelete(show.id)}>Delete</button>
+                                            <button 
+                                                className="theatre-shows-button edit" 
+                                                onClick={() => setEditingShow(show)}
+                                            >
+                                                Edit
+                                            </button>
+                                            <button 
+                                                className="theatre-shows-button delete" 
+                                                onClick={() => handleDelete(show.theatreShowId)}
+                                            >
+                                                Delete
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
