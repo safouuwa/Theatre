@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Login.css'; 
 
-function Login() {
+const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -17,18 +17,17 @@ function Login() {
         setTimeout(() => navigate('/dashboard'), 1000);
       })
       .catch((error) => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
           setErrorMessage('Invalid username or password');
         } else {
           setErrorMessage('An error occurred. Please try again later.');
         }
       });
-    };
+  };
+
   return (
     <div className="login-container">
       <h2>Login</h2>
-
-      {/* Username input */}
       <div>
         <label>Username </label>
         <input
@@ -37,8 +36,6 @@ function Login() {
           onChange={(e) => setUsername(e.target.value)}
         />
       </div>
-
-      {/* Password input */}
       <div>
         <label>Password </label>
         <input
@@ -47,14 +44,11 @@ function Login() {
           onChange={(e) => setPassword(e.target.value)}
         />
       </div>
-
-      {/* Error or success message */}
       {errorMessage && <div className="error-message">{errorMessage}</div>}
       {successMessage && <div className="success-message">{successMessage}</div>}
-
-      {/* Login button */}
       <button onClick={handleLogin}>Login</button>
     </div>
   );
 }
+
 export default Login;
