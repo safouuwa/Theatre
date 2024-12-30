@@ -31,15 +31,20 @@ public class TheatreShowController : Controller
     public IActionResult PostTheatreShow([FromBody]TheatreShow theatreShow)
     {
         if (theatreShow == null) return BadRequest("Data in body not sufficient or correct for a Theatre Show");
+        if (theatreShow.TheatreShowId != null || theatreShow.theatreShowDates.Any(x => x.TheatreShowDateId != null) || theatreShow.theatreShowDates.Any(x => x.TheatreShow != null)) return BadRequest("ID fields (except for VenueId) are auto incremented, thus should not be filled.");
+        if (theatreShow.Venue.VenueId == 0 && (theatreShow.Venue.Name == null || theatreShow.Venue.Capacity == 0)) return BadRequest("For the venue, please either only enter the ID of an existing one, or register a new one by only providing a Name and Capacity.");
         TheatreShowDisplayModel show = _theatreShowService.PostTheatreShow(theatreShow);
-        if (show is null) return BadRequest("Show with given id already exists");
+        if (show == null) return NotFound("ID for Venue not found.");
         return Ok($" {show.Title} added to the database!");
     }
     [AdminOnly]
-    [HttpPut("Update")]
-    public IActionResult UpdateTheatreShow([FromBody] TheatreShow theatreShow)
+    [HttpPut("{showid}")]
+    public IActionResult UpdateTheatreShow([FromRoute] int showid, [FromBody] TheatreShow theatreShow)
     {
         if (theatreShow == null) return BadRequest("Data in body not sufficient or correct for a Theatre Show");
+        if (theatreShow.TheatreShowId != null || theatreShow.theatreShowDates.Any(x => x.TheatreShowDateId != null) || theatreShow.theatreShowDates.Any(x => x.TheatreShow != null)) return BadRequest("ID fields (except for VenueId) are auto incremented, thus should not be filled.");
+        if (theatreShow.Venue.VenueId == 0 && (theatreShow.Venue.Name == null || theatreShow.Venue.Capacity == 0)) return BadRequest("For the venue, please either only enter the ID of an existing one, or register a new one by only providing a Name and Capacity.");
+        theatreShow.TheatreShowId = showid;
         int show = _theatreShowService.UpdateTheatreShow(theatreShow);
         if (show is 2) return Unauthorized("Given data does not exist in database; nothing to update");
         return Ok($" {theatreShow.Title} updated in the database!");

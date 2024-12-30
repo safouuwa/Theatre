@@ -1,0 +1,55 @@
+.reservations-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+.search-container {
+    margin-bottom: 20px;
+}
+
+.search-container input {
+    padding: 5px;
+    margin-right: 10px;
+}
+
+.search-container button {
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.reservations-table {
+    width: 100%;
+    max-width: 1000px;
+    border-collapse: collapse;
+}
+
+.reservations-table th,
+.reservations-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.reservations-table th {
+    background-color: #333;
+    color: white;
+}
+
+.reservations-table tr:nth-child(even) {
+    background-color: #222;
+}
+
+.reservations-table tr:hover {
+    background-color: #444;
+}
+

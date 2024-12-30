@@ -5,6 +5,7 @@ using StarterKit.Services;
 using StarterKit.Filters;
 using Microsoft.Extensions.Options;
 using System.Globalization;
+using Microsoft.AspNetCore.Cors;
 
 namespace StarterKit
 {
@@ -16,6 +17,14 @@ namespace StarterKit
 
             builder.Services.AddControllersWithViews();
             
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowReactApp", builder => builder
+                    .WithOrigins("http://localhost:3000")  // React app running on port 3000
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials());  // Optional, if you're sending credentials (cookies, etc.)
+            });
 
             builder.Services.AddDistributedMemoryCache();
 
@@ -33,6 +42,7 @@ namespace StarterKit
             builder.Services.AddScoped<IReservationService, ReservationService>();
             builder.Services.AddScoped<IPointService, PointService>();
             builder.Services.AddScoped<IRewardService, RewardService>();
+            builder.Services.AddScoped<IVenueService, VenueService>();
 
 
             builder.Services.AddDbContext<DatabaseContext>(
@@ -43,6 +53,7 @@ namespace StarterKit
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
+                
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
@@ -52,6 +63,8 @@ namespace StarterKit
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseCors("AllowReactApp");
 
             app.UseAuthorization();
 

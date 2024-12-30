@@ -113,11 +113,11 @@ namespace StarterKit.Services
                 },
                 TheatreShowDate = new TheatreShowDateDisplayModel
                 {
-                    TheatreShowDateId = r.TheatreShowDate.TheatreShowDateId,
+                    TheatreShowDateId = (int)r.TheatreShowDate.TheatreShowDateId,
                     DateAndTime = r.TheatreShowDate.DateAndTime,
                     TheatreShow = new TheatreShowDisplayModelForField
                     {
-                        TheatreShowId = r.TheatreShowDate.TheatreShow.TheatreShowId,
+                        TheatreShowId = (int)r.TheatreShowDate.TheatreShow.TheatreShowId,
                         Title = r.TheatreShowDate.TheatreShow.Title,
                         Description = r.TheatreShowDate.TheatreShow.Description,
                         Price = r.TheatreShowDate.TheatreShow.Price,
@@ -125,7 +125,7 @@ namespace StarterKit.Services
                         {
                             VenueId = r.TheatreShowDate.TheatreShow.Venue?.VenueId ?? 0,
                             Name = r.TheatreShowDate.TheatreShow.Venue?.Name,
-                            Capacity = r.TheatreShowDate.TheatreShow.Venue.Capacity
+                            Capacity = (int)r.TheatreShowDate.TheatreShow.Venue.Capacity
                         }
                     }
                 }
