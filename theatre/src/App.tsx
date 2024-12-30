@@ -5,7 +5,7 @@ import Dashboard from './components/Dashboard.tsx';
 import TheatreShows from './components/TheatreShows.tsx';
 import Reservations from './components/Reservations.tsx';
 import HomePage from './components/HomePage.tsx';
-import ShowDetails from './components/Showdetails.tsx';
+import ShowDetails from './components/ShowDetails.tsx'; 
 
 const App: React.FC = () => {
   return (
