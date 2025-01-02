@@ -1,28 +1,30 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; 
-import axios from 'axios';
-import './Login.css'; 
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext.tsx';
+import './Login.css';
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const handleLogin = () => {
-    axios.post('http://localhost:5097/api/v1/Login/Login', { username, password })
-      .then(() => {
-        setSuccessMessage('Login successful! Redirecting to dashboard...');
-        setTimeout(() => navigate('/dashboard'), 1000);
-      })
-      .catch((error) => {
-        if (error.response && error.response.status === 401) {
-          setErrorMessage('Invalid username or password');
-        } else {
-          setErrorMessage('An error occurred. Please try again later.');
-        }
-      });
+  const handleLogin = async () => {
+    try {
+      const isAdmin = await login(username, password);
+      if (isAdmin) {
+        navigate('/dashboard');
+      } else {
+        navigate('/');
+      }
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        setErrorMessage('Invalid username or password');
+      } else {
+        setErrorMessage('An error occurred. Please try again later.');
+      }
+    }
   };
 
   return (
@@ -45,10 +47,10 @@ const Login: React.FC = () => {
         />
       </div>
       {errorMessage && <div className="error-message">{errorMessage}</div>}
-      {successMessage && <div className="success-message">{successMessage}</div>}
       <button onClick={handleLogin}>Login</button>
     </div>
   );
-}
+};
 
 export default Login;
+
