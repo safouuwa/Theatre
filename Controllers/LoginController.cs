@@ -5,7 +5,6 @@ using StarterKit.Models;
 
 namespace StarterKit.Controllers;
 
-
 [Route("api/v1/Login")]
 public class LoginController : Controller
 {
@@ -22,7 +21,6 @@ public class LoginController : Controller
     [HttpPost("Login")]
     public IActionResult Login([FromBody] LoginBody loginBody)
     {
-        // TODO: Impelement login method
         LoginStatus status = _loginService.CheckPassword(loginBody.Username, loginBody.Password);
         if (status is LoginStatus.AdminSuccess)
         {
@@ -42,9 +40,27 @@ public class LoginController : Controller
     [HttpGet("IsAdminLoggedIn")]
     public IActionResult IsAdminLoggedIn()
     {
-        // TODO: This method should return a status 200 OK when logged in, else 403, unauthorized
         if (LoggedIn == LoginStatus.AdminSuccess) return Ok("You are logged in!");
         return Unauthorized("You are not logged in");
+    }
+
+    [HttpGet("CustomerData")]
+    public IActionResult GetCustomerData()
+    {
+        if (CurrentLoggedIn == null)
+        {
+            return Unauthorized("No user is currently logged in");
+        }
+
+        var customerData = new CustomerDisplayModel
+        {
+            CustomerId = CurrentLoggedIn.CustomerId,
+            FirstName = CurrentLoggedIn.FirstName,
+            LastName = CurrentLoggedIn.LastName,
+            Email = CurrentLoggedIn.Email
+        };
+
+        return Ok(customerData);
     }
 
     [HttpGet("Logout")]
@@ -54,7 +70,6 @@ public class LoginController : Controller
         CurrentLoggedIn = null;
         return Ok("Logged out");
     }
-
 }
 
 public class LoginBody
@@ -62,3 +77,4 @@ public class LoginBody
     public string? Username { get; set; }
     public string? Password { get; set; }
 }
+
