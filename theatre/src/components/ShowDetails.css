@@ -1,0 +1,27 @@
+.show-details-container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.show-details-container h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.show-details-container p {
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 10px 0;
+    color: #555;
+}
+
+.show-details-container p:first-of-type {
+    margin-top: 0;
+}
