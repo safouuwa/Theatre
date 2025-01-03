@@ -59,6 +59,9 @@ const ShowDetails: React.FC = () => {
                 <ReservationForm
                     showId={show.theatreShowId}
                     theatreShowDateId={show.theatreShowDates[0].theatreShowDateId}
+                    showTitle={show.title}
+                    showDate={show.theatreShowDates[0].dateAndTime}
+                    price={show.price}
                     onCancel={() => setShowReservationForm(false)}
                 />
             )}
