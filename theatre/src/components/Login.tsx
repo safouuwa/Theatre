@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext.tsx';
+import { useShoppingCart } from './ShoppingCartContext.tsx';
 import './Login.css';
 
 const Login: React.FC = () => {
@@ -9,10 +10,12 @@ const Login: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { clearCart } = useShoppingCart();
 
   const handleLogin = async () => {
     try {
       const isAdmin = await login(username, password);
+      clearCart(); // Clear cart on successful login
       if (isAdmin) {
         navigate('/dashboard');
       } else {
@@ -53,4 +56,3 @@ const Login: React.FC = () => {
 };
 
 export default Login;
-
