@@ -29,6 +29,11 @@ const Login: React.FC = () => {
       }
     }
   };
+  const handleReturnHome = () => {
+    navigate('/');
+  };
+
+  
 
   return (
     <div className="login-container">
@@ -51,6 +56,9 @@ const Login: React.FC = () => {
       </div>
       {errorMessage && <div className="error-message">{errorMessage}</div>}
       <button onClick={handleLogin}>Login</button>
+      <button onClick={handleReturnHome} className="return-home-button">
+          Return to Home
+        </button>
     </div>
   );
 };

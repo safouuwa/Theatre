@@ -61,8 +61,11 @@ const HomePage: React.FC = () => {
         navigate('/cart');
     };
 
+    const InstantLogOut = async () => {await logout();}
+
     return (
         <div>
+            <div>{isAdmin ? InstantLogOut : ''}</div>
             <div className="header">
                 {isAuthenticated ? (
                     <div>

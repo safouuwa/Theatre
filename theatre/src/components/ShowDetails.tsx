@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import ReservationForm from './ReservationForm.tsx';
 import './ShowDetails.css';
@@ -19,9 +20,14 @@ interface TheatreShow {
 }
 
 const ShowDetails: React.FC = () => {
+    const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
     const [show, setShow] = useState<TheatreShow | null>(null);
     const [showReservationForm, setShowReservationForm] = useState(false);
+
+    const handleReturnHome = () => {
+        navigate('/');
+      };
 
     useEffect(() => {
         axios.get<TheatreShow>(`http://localhost:5097/api/v1/TheatreShow/id/${id}`)
@@ -53,6 +59,9 @@ const ShowDetails: React.FC = () => {
                         onClick={() => setShowReservationForm(true)}
                     >
                         Reserve Tickets
+                    </button>
+                    <button onClick={handleReturnHome} className="return-home-button">
+                    Return to Home
                     </button>
                 </>
             ) : (

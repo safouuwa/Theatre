@@ -46,6 +46,7 @@ public class TheatreShowController : Controller
         if (theatreShow.Venue.VenueId == 0 && (theatreShow.Venue.Name == null || theatreShow.Venue.Capacity == 0)) return BadRequest("For the venue, please either only enter the ID of an existing one, or register a new one by only providing a Name and Capacity.");
         theatreShow.TheatreShowId = showid;
         int show = _theatreShowService.UpdateTheatreShow(theatreShow);
+        if (show is 1) return BadRequest("Cannot update a show with a live reservation");
         if (show is 2) return Unauthorized("Given data does not exist in database; nothing to update");
         return Ok($" {theatreShow.Title} updated in the database!");
     }
