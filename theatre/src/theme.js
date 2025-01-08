@@ -1,6 +1,6 @@
 export const lightTheme = {
     background: "#ffffff",
-    text: "#000000",
+    text: "#ffffff",
     containerBackground: "#f0f0f0",
     buttonBackground: "#007bff",
     buttonText: "#ffffff",

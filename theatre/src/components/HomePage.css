@@ -7,11 +7,18 @@
 .homepage-container h1 {
     text-align: center;
     margin-bottom: 20px;
+    color: #0077ff;
 }
 
 .homepage-container ul {
     list-style-type: none;
-    padding: 0;
+    padding: 0px;
+    margin: 0;
+    background-color: #ccc;
+    color: rgb(0, 0, 0);
+    border-radius: 5px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.7);
+    text-size-adjust: 200%;
 }
 
 .homepage-container li {

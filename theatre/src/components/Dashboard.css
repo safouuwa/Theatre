@@ -3,6 +3,14 @@ body {
     background-color: #101010; 
     font-family: Arial, sans-serif;
   }
+  .dashboard-container {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    color: #0077ff;
+   
+  }
   
   .dashboard {
     text-align: center;
