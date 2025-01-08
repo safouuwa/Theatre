@@ -68,9 +68,15 @@ const HomePage: React.FC = () => {
             const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0);
             url += `&startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`;
         }
+        const currentDate = new Date().toISOString();
+        url += `&currentDate=${currentDate}`;
+
         axios.get<TheatreShow[]>(url)
             .then(response => {
-                setShows(response.data);
+                const upcomingShows = response.data.filter(show => 
+                    new Date(show.theatreShowDates[0].dateAndTime) >= new Date(currentDate)
+                );
+                setShows(upcomingShows);
             })
             .catch(error => {
                 console.error('Error fetching shows:', error);
