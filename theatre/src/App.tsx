@@ -7,9 +7,11 @@ import TheatreShows from './components/TheatreShows.tsx';
 import Reservations from './components/Reservations.tsx';
 import HomePage from './components/HomePage.tsx';
 import ShowDetails from './components/ShowDetails.tsx';
+import Layout from "./Layout";
 
 const App: React.FC = () => {
   return (
+    <Layout>
     <AuthProvider>
       <div className="App">
         <Routes>
@@ -22,6 +24,7 @@ const App: React.FC = () => {
         </Routes>
       </div>
     </AuthProvider>
+    </Layout>
   );
 }
 
