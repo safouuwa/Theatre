@@ -1,5 +1,5 @@
 export const lightTheme = {
-    background: "#ffffff",
+    background: "#f1f1f1",
     text: "#ffffff",
     containerBackground: "#f0f0f0",
     buttonBackground: "#007bff",
@@ -7,10 +7,10 @@ export const lightTheme = {
   };
   
   export const darkTheme = {
-    background: "#000000",
+    background: "#333333",
     text: "#ffffff",
-    containerBackground: "#333333",
-    buttonBackground: "#222222",
+    containerBackground: "#666666",
+    buttonBackground: "#555555",
     buttonText: "#ffffff",
   };
   
