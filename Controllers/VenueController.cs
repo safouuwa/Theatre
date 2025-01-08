@@ -14,7 +14,6 @@ public class VenueController : Controller
         _venueService = service;
     }
 
-    [AdminOnly]
     [HttpGet]
     public IActionResult GetAllVenues()
     {
