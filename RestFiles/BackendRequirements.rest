@@ -133,7 +133,7 @@ Content-Type: application/json
             "NumberOfTickets" : 1
         },
         {
-            "TheatreShowDateId" : 1,
+            "TheatreShowDateId" : 2,
             "NumberOfTickets" : 1
         }
     ]

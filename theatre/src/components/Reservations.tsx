@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import './Reservations.css';
 
 interface Reservation {
@@ -18,8 +19,13 @@ interface Reservation {
 }
 
 const Reservations: React.FC = () => {
+  const navigate = useNavigate();
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [search, setSearch] = useState('');
+
+  const handleReturnDashboard = () => {
+    navigate('/dashboard');
+  };
  
   useEffect(() => {
     fetchReservations();
@@ -54,6 +60,9 @@ const Reservations: React.FC = () => {
           placeholder="Search by show title" 
         />
         <button onClick={handleSearch}>Search</button>
+        <button onClick={handleReturnDashboard} className="return-home-button">
+          Return
+        </button>
       </div>
       <table className="reservations-table">
         <thead>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext.tsx';
+import { useShoppingCart } from './ShoppingCartContext.tsx';
 import './HomePage.css';
 
 interface TheatreShow {
@@ -37,6 +38,7 @@ const HomePage: React.FC = () => {
     });
     const navigate = useNavigate();
     const { isAuthenticated, isAdmin, logout, customerData } = useAuth();
+    const { cartItems, clearCart } = useShoppingCart();
 
     useEffect(() => {
         if (isAdmin) {
@@ -104,21 +106,34 @@ const HomePage: React.FC = () => {
         navigate('/login');
     };
 
-    const handleLogoutClick = () => {
-        logout();
+    const handleLogoutClick = async () => {
+        await logout();
+        clearCart(); // Clear cart on logout
         navigate('/');
     };
 
+    const handleCartClick = () => {
+        navigate('/cart');
+    };
+
+    const InstantLogOut = async () => {await logout();}
+
     return (
         <div>
-            {isAuthenticated ? (
-                <div>
-                    <p>Welcome, {customerData?.firstName || 'User'}!</p>
-                    <button className="logout-button" onClick={handleLogoutClick}>Logout</button>
-                </div>
-            ) : (
-                <button className="login-button" onClick={handleLoginClick}>Login</button>
-            )}
+            <div>{isAdmin ? InstantLogOut : ''}</div>
+            <div className="header">
+                {isAuthenticated ? (
+                    <div>
+                        <span>Welcome, {customerData?.firstName || 'User'}!</span>
+                        <button className="logout-button" onClick={handleLogoutClick}>Logout</button>
+                    </div>
+                ) : (
+                    <button className="login-button" onClick={handleLoginClick}>Login</button>
+                )}
+                <button className="cart-button" onClick={handleCartClick}>
+                    Cart ({cartItems.length})
+                </button>
+            </div>
             <div className="homepage-container">
                 <h1>Available Shows</h1>
                 <div className="filter-container">
