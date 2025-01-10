@@ -31,7 +31,9 @@ const HomePage: React.FC = () => {
         venueId: '',
         month: '',
         sortBy: 'title',
-        sortOrder: 'asc'
+        sortOrder: 'asc',
+        startDate: '',
+        endDate: ''
     });
     const navigate = useNavigate();
     const { isAuthenticated, isAdmin, logout, customerData } = useAuth();
@@ -58,7 +60,7 @@ const HomePage: React.FC = () => {
     };
 
     const fetchShows = () => {
-        const { title, description, venueId, month, sortBy, sortOrder } = filters;
+        const { title, description, venueId, month, sortBy, sortOrder, startDate, endDate } = filters;
         let url = `http://localhost:5097/api/v1/TheatreShow/filter/${sortBy}/${sortOrder}?title=${title}&description=${description}`;
         if (venueId) {
             url += `&location=${venueId}`;
@@ -67,6 +69,9 @@ const HomePage: React.FC = () => {
             const startDate = new Date(month);
             const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0);
             url += `&startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`;
+        }
+        if (startDate && endDate) {
+            url += `&startDate=${new Date(startDate).toISOString()}&endDate=${new Date(endDate).toISOString()}`;
         }
         const currentDate = new Date().toISOString();
         url += `&currentDate=${currentDate}`;
@@ -138,9 +143,15 @@ const HomePage: React.FC = () => {
                         ))}
                     </select>
                     <input
-                        type="month"
-                        name="month"
-                        value={filters.month}
+                        type="date"
+                        name="startDate"
+                        value={filters.startDate}
+                        onChange={handleFilterChange}
+                    />
+                    <input
+                        type="date"
+                        name="endDate"
+                        value={filters.endDate}
                         onChange={handleFilterChange}
                     />
                     <select name="sortBy" value={filters.sortBy} onChange={handleFilterChange}>

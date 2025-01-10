@@ -30,6 +30,7 @@
 .filter-container select {
     padding: 5px;
     font-size: 14px;
+    margin: 5px;
 }
 
 ul {
