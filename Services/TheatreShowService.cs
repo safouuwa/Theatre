@@ -119,6 +119,7 @@ public TheatreShowDisplayModel RetrieveById(int id)
     public int UpdateTheatreShow(TheatreShow theatreShow)
     {
         if (!_context.TheatreShow.Any(x => x.TheatreShowId == theatreShow.TheatreShowId)) return 2;
+        if (_context.Reservation.Any(x => x.TheatreShowDate.TheatreShow.TheatreShowId == theatreShow.TheatreShowId)) return 1;
         _context.TheatreShow.Remove(_context.TheatreShow.FirstOrDefault(x => x.TheatreShowId == theatreShow.TheatreShowId));
         foreach (TheatreShowDate t in _context.TheatreShowDate.Where(x => x.TheatreShow.TheatreShowId == theatreShow.TheatreShowId)) _context.TheatreShowDate.Remove(t);
         _context.SaveChanges();

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext.tsx';
+import { useShoppingCart } from './ShoppingCartContext.tsx';
 import './Login.css';
 
 const Login: React.FC = () => {
@@ -9,10 +10,12 @@ const Login: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { clearCart } = useShoppingCart();
 
   const handleLogin = async () => {
     try {
       const isAdmin = await login(username, password);
+      clearCart(); // Clear cart on successful login
       if (isAdmin) {
         navigate('/dashboard');
       } else {
@@ -26,6 +29,11 @@ const Login: React.FC = () => {
       }
     }
   };
+  const handleReturnHome = () => {
+    navigate('/');
+  };
+
+  
 
   return (
     <div className="login-container">
@@ -48,9 +56,11 @@ const Login: React.FC = () => {
       </div>
       {errorMessage && <div className="error-message">{errorMessage}</div>}
       <button onClick={handleLogin}>Login</button>
+      <button onClick={handleReturnHome} className="return-home-button">
+          Return to Home
+        </button>
     </div>
   );
 };
 
 export default Login;
-
