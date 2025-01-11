@@ -44,7 +44,7 @@ input:focus {
 
 button {
   padding: 10px 20px;
-  background-color: #c0c0c0; /* Silver */
+  background-color: #4CAF50;
   color: white;
   border: none;
   border-radius: 5px;
@@ -54,7 +54,7 @@ button {
 }
 
 button:hover {
-  background-color: #b0b0b0; /* Darker silver on hover */
+  background-color: #45a049;
 }
 
 button:focus {
@@ -66,5 +66,5 @@ button:focus {
 }
 
 .success-message {
-  color: #66ff66; /* Green success message */
+  color: #4CAF50; /* Green success message */
 }

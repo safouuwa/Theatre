@@ -1,15 +1,14 @@
-/* dashboard.css */
 body {
     background-color: #101010; 
     font-family: Arial, sans-serif;
   }
+
   .dashboard-container {
     justify-content: center;
     align-items: center;
     display: flex;
     flex-direction: column;
     color: #0077ff;
-   
   }
   
   .dashboard {
@@ -45,6 +44,11 @@ body {
 
   .dashboard-button1 {
     margin-right: 20px;
+    box-shadow: 1px 4px 12px rgba(0, 0, 0, 0.7);
+  }
+  .dashboard-button2 {
+    margin-right: 20px;
+    box-shadow: 1px 4px 12px rgba(0, 0, 0, 0.7);
   }
   
   .dashboard button:hover {
@@ -53,4 +57,13 @@ body {
   
   .dashboard button:focus {
     outline: none;
+    box-shadow: 1px 4px 12px rgba(0, 0, 0, 0.7);
   }
+  
+  .shopping-cart-container h3 {
+    color: #b4af5e;
+}
+
+.shopping-cart-container p {
+    color: #bb9160;
+}

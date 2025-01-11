@@ -6,7 +6,7 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-    color: white;
+    color: rgb(255, 255, 255);
     font-family: Arial, sans-serif;
 }
 
@@ -24,7 +24,7 @@
     padding: 10px;
     width: 300px;
     margin-right: 10px;
-    background-color: white;
+    background-color: rgb(255, 255, 255);
 
 }
 
@@ -34,6 +34,10 @@
     color: white;
     border: none;
     cursor: pointer;
+}
+
+.search-container button:hover {
+    background-color: #45a049;
 }
 
 .reservations-table {

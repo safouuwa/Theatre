@@ -21,7 +21,7 @@
   
   .form-group label {
     font-weight: 500;
-    color: #333;
+    color: #000000;
   }
   
   .form-input {
@@ -68,12 +68,12 @@
   }
   
   .cancel-button {
-    background-color: #f0f0f0;
-    color: #333;
+    background-color: #dc2626;
+    color: #fffdfd;
   }
   
   .cancel-button:hover {
-    background-color: #e0e0e0;
+    background-color: #b91c1c;
   }
   
   .error-message {
