@@ -1,40 +1,63 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext.tsx';
+import { useShoppingCart } from './ShoppingCartContext.tsx';
 import './ReservationForm.css';
 
 interface ReservationFormProps {
   showId: number;
   theatreShowDateId: number;
+  showTitle: string;
+  showDate: string;
+  price: number;
   onCancel: () => void;
 }
 
-interface NonLoggedReservationRequest {
-  FirstName: string;
-  LastName: string;
-  Email: string;
-  Password?: string;
-  Requests: LoggedReservationRequest[];
-}
-
-interface LoggedReservationRequest {
-  TheatreShowDateId: number;
-  NumberOfTickets: number;
-}
-
-const ReservationForm: React.FC<ReservationFormProps> = ({ showId, theatreShowDateId, onCancel }) => {
+const ReservationForm: React.FC<ReservationFormProps> = ({ 
+  showId, 
+  theatreShowDateId, 
+  showTitle, 
+  showDate, 
+  price, 
+  onCancel 
+}) => {
   const navigate = useNavigate();
   const { isAuthenticated, customerData } = useAuth();
+  const { addToCart, customerInfo, setCustomerInfo, cartItems } = useShoppingCart();
   const [formData, setFormData] = useState({
-    firstName: customerData?.firstName || '',
-    lastName: customerData?.lastName || '',
-    email: customerData?.email || '',
+    firstName: '',
+    lastName: '',
+    email: '',
     password: '',
     numberOfTickets: 1
   });
   const [error, setError] = useState<string>('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated && customerData) {
+      setFormData(prev => ({
+        ...prev,
+        firstName: customerData.firstName || '',
+        lastName: customerData.lastName || '',
+        email: customerData.email || ''
+      }));
+    } else if (customerInfo && cartItems.length > 0) {
+      setFormData(prev => ({
+        ...prev,
+        firstName: customerInfo.firstName,
+        lastName: customerInfo.lastName,
+        email: customerInfo.email
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: ''
+      }));
+    }
+  }, [isAuthenticated, customerData, customerInfo, cartItems]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -44,44 +67,35 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ showId, theatreShowDa
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setIsSubmitting(true);
 
-    const reservationRequest: LoggedReservationRequest = {
-      TheatreShowDateId: theatreShowDateId,
-      NumberOfTickets: formData.numberOfTickets
-    };
-
-    try {
-      if (isAuthenticated) {
-        await axios.post('http://localhost:5097/api/v1/Reservation/account', [reservationRequest]);
-      } else {
-        const guestReservationRequest: NonLoggedReservationRequest = {
-          FirstName: formData.firstName,
-          LastName: formData.lastName,
-          Email: formData.email,
-          Password: formData.password,
-          Requests: [reservationRequest]
-        };
-        await axios.post('http://localhost:5097/api/v1/Reservation', guestReservationRequest);
-      }
-      alert('Reservation successful!');
-      navigate('/');
-    } catch (error) {
-      setError('Failed to make reservation. Please try again.');
-      console.error('Reservation error:', error);
-    } finally {
-      setIsSubmitting(false);
+    if (!isAuthenticated && !customerInfo) {
+      setCustomerInfo({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password
+      });
     }
+
+    addToCart({
+      theatreShowDateId,
+      numberOfTickets: formData.numberOfTickets,
+      showTitle,
+      showDate,
+      price
+    });
+
+    navigate('/cart');
   };
 
   return (
     <div className="reservation-form-container">
-      <h2>Make a Reservation</h2>
+      <h2>Add to Cart</h2>
       <form onSubmit={handleSubmit} className="reservation-form">
-        {!isAuthenticated && (
+        {!isAuthenticated && (cartItems.length === 0 || !customerInfo) && (
           <>
             <div className="form-group">
               <label htmlFor="firstName">First Name:</label>
@@ -153,8 +167,8 @@ const ReservationForm: React.FC<ReservationFormProps> = ({ showId, theatreShowDa
         {error && <div className="error-message">{error}</div>}
 
         <div className="form-buttons">
-          <button type="submit" disabled={isSubmitting} className="submit-button">
-            {isSubmitting ? 'Submitting...' : 'Confirm Reservation'}
+          <button type="submit" className="submit-button">
+            Add to Cart
           </button>
           <button type="button" onClick={onCancel} className="cancel-button">
             Cancel

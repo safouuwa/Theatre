@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DatePicker from "react-datepicker";
+import { useNavigate } from 'react-router-dom';
 import "react-datepicker/dist/react-datepicker.css";
 import './TheatreShows.css';
 
@@ -38,6 +39,7 @@ interface Toast {
 }
 
 const TheatreShows: React.FC = () => {
+  const navigate = useNavigate();
   const [shows, setShows] = useState<TheatreShow[]>([]);
   const [venues, setVenues] = useState<Venue[]>([]);
   const [form, setForm] = useState<FormData>({ 
@@ -56,6 +58,11 @@ const TheatreShows: React.FC = () => {
   useEffect(() => {
     refreshData();
   }, []);
+
+  const handleReturnDashboard = () => {
+    navigate('/dashboard');
+  };
+
 
   useEffect(() => {
     if (editingShow) {
@@ -291,6 +298,9 @@ const TheatreShows: React.FC = () => {
           <div className="form-buttons">
             <button type="submit" className="theatre-shows-button">
               {editingShow ? 'Update Show' : 'Add Show'}
+            </button>
+            <button onClick={handleReturnDashboard} className="return-home-button">
+              Return
             </button>
             {editingShow && (
               <button type="button" onClick={handleCancelEdit} className="theatre-shows-button cancel">
