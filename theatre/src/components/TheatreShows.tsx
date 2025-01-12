@@ -143,7 +143,7 @@ const TheatreShows: React.FC = () => {
         })
         .catch((error) => {
           console.error('Error deleting show:', error);
-          showToast("Error", "Failed to delete show. Please try again.", "error");
+          showToast("Error", "Shows with active reservations cannot be deleted.", "error");
         });
     }
   };
