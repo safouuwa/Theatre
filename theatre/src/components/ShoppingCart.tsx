@@ -15,7 +15,7 @@ interface ReservationRequest {
     }[];
   }
   
-  const ShoppingCart: React.FC = () => {
+  const ShoppingCart = () => {
     const navigate = useNavigate();
     const { isAuthenticated, customerData } = useAuth();
     const { cartItems, removeFromCart, clearCart, customerInfo } = useShoppingCart();

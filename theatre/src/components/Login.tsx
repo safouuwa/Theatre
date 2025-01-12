@@ -4,7 +4,7 @@ import { useAuth } from './AuthContext.tsx';
 import { useShoppingCart } from './ShoppingCartContext.tsx';
 import './Login.css';
 
-const Login: React.FC = () => {
+const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');

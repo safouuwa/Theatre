@@ -13,14 +13,7 @@ interface ReservationFormProps {
   onCancel: () => void;
 }
 
-const ReservationForm: React.FC<ReservationFormProps> = ({ 
-  showId, 
-  theatreShowDateId, 
-  showTitle, 
-  showDate, 
-  price, 
-  onCancel 
-}) => {
+const ReservationForm = (props: ReservationFormProps) => {
   const navigate = useNavigate();
   const { isAuthenticated, customerData } = useAuth();
   const { addToCart, customerInfo, setCustomerInfo, cartItems } = useShoppingCart();
@@ -81,11 +74,11 @@ const ReservationForm: React.FC<ReservationFormProps> = ({
     }
 
     addToCart({
-      theatreShowDateId,
+      theatreShowDateId: props.theatreShowDateId,
       numberOfTickets: formData.numberOfTickets,
-      showTitle,
-      showDate,
-      price
+      showTitle: props.showTitle,
+      showDate: props.showDate,
+      price: props.price
     });
 
     navigate('/cart');
@@ -170,7 +163,7 @@ const ReservationForm: React.FC<ReservationFormProps> = ({
           <button type="submit" className="submit-button">
             Add to Cart
           </button>
-          <button type="button" onClick={onCancel} className="cancel-button">
+          <button type="button" onClick={props.onCancel} className="cancel-button">
             Cancel
           </button>
         </div>
