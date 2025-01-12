@@ -26,10 +26,10 @@ export const useAuth = () => {
   return context;
 };
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider = (props) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [customerData, setCustomerData] = useState<CustomerData | null>(null);
+  const [customerData, setCustomerData] = useState(null);
 
   const checkAdminStatus = async () => {
     try {
@@ -42,9 +42,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const login = async (username: string, password: string): Promise<boolean> => {
+  const login = async (username, password) => {
     try {
-      const response = await axios.post('http://localhost:5097/api/v1/Login/Login', { username, password });
+      await axios.post('http://localhost:5097/api/v1/Login/Login', { username, password });
       setIsAuthenticated(true);
       
       const adminStatus = await checkAdminStatus();
@@ -73,8 +73,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, isAdmin, customerData, login, logout }}>
-      {children}
+      {props.children}
     </AuthContext.Provider>
   );
 };
-

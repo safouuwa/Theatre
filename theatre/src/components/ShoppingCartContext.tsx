@@ -34,7 +34,7 @@ export const useShoppingCart = () => {
   return context;
 };
 
-export const ShoppingCartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const ShoppingCartProvider = (props) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo | null>(null);
 
@@ -91,7 +91,7 @@ export const ShoppingCartProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   return (
     <ShoppingCartContext.Provider value={{ cartItems, addToCart, removeFromCart, clearCart, customerInfo, setCustomerInfo }}>
-      {children}
+      {props.children}
     </ShoppingCartContext.Provider>
   );
 };

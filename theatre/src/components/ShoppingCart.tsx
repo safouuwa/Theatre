@@ -17,7 +17,7 @@ interface ReservationRequest {
   
   const ShoppingCart = () => {
     const navigate = useNavigate();
-    const { isAuthenticated, customerData } = useAuth();
+    const { isAuthenticated } = useAuth();
     const { cartItems, removeFromCart, clearCart, customerInfo } = useShoppingCart();
     const [error, setError] = useState<string>('');
     const [isSubmitting, setIsSubmitting] = useState(false);
