@@ -8,10 +8,12 @@ import TheatreShows from './components/TheatreShows.tsx';
 import Reservations from './components/Reservations.tsx';
 import HomePage from './components/HomePage.tsx';
 import ShowDetails from './components/ShowDetails.tsx';
+import Layout from "./Layout";
 import ShoppingCart from './components/ShoppingCart.tsx';
 
 const App: React.FC = () => {
   return (
+    <Layout>
     <AuthProvider>
       <ShoppingCartProvider>
         <div className="App">
@@ -27,6 +29,7 @@ const App: React.FC = () => {
         </div>
       </ShoppingCartProvider>
     </AuthProvider>
+    </Layout>
   );
 }
 

@@ -6,8 +6,14 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-    color: white;
+    color: rgb(255, 255, 255);
     font-family: Arial, sans-serif;
+}
+
+.reservations-container h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    color: #0077ff;
 }
 
 .search-container {
@@ -15,8 +21,11 @@
 }
 
 .search-container input {
-    padding: 5px;
+    padding: 10px;
+    width: 300px;
     margin-right: 10px;
+    background-color: rgb(255, 255, 255);
+
 }
 
 .search-container button {
@@ -25,6 +34,10 @@
     color: white;
     border: none;
     cursor: pointer;
+}
+
+.search-container button:hover {
+    background-color: #45a049;
 }
 
 .reservations-table {
@@ -47,6 +60,10 @@
 
 .reservations-table tr:nth-child(even) {
     background-color: #222;
+}
+
+.reservations-table tr:nth-child(odd) {
+    background-color: #333;
 }
 
 .reservations-table tr:hover {
